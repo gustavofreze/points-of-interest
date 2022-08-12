@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  points-of-interest-adm:
+    image: mysql:8.0.29
+    restart: always
+    hostname: points-of-interest-adm
+    container_name: points-of-interest-adm
+    ports:
+      - "3306:3306"
+    environment:
+      TZ: "America/Sao_Paulo"
+      MYSQL_ROOT_PASSWORD: "root"
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./db/mysql/config:/scripts/config
+      - ./db/mysql/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+
+  points-of-interest:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    container_name: points-of-interest
+    env_file:
+      - ./config/configs.env
+    depends_on:
+      - points-of-interest-adm
+    volumes:
+      - ./src:/var/www/html/src
+      - ./public:/var/www/html/public
+      - ./composer.json:/var/www/html/composer.json
+
+  nginx:
+    container_name: nginx
+    image: nginx:1.23.0
+    restart: always
+    depends_on:
+      - points-of-interest
+    volumes:
+      - ./public:/var/www/html
+      - ./config/nginx/nginx.conf:/etc/nginx/conf.d/site.conf
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nginx.entrypoints=http"
+      - "traefik.http.routers.nginx.rule=Host(`points-of-interest.localhost`)"
+
+  reverse-proxy:
+    container_name: reverse-proxy
+    image: traefik:v2.8.1
+    restart: always
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.http.address=:81"
+    ports:
+      - "81:81"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
