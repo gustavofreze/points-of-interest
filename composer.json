@@ -1,0 +1,71 @@
+{
+    "name": "gustavofreze/points-of-interest",
+    "type": "project",
+    "license": "MIT",
+    "homepage": "https://github.com/gustavofreze/points-of-interest",
+    "description": "Implementação do desafio 'Pontos de Interesse por GPS', do repositório backend-br.",
+    "prefer-stable": true,
+    "minimum-stability": "stable",
+    "keywords": [
+        "points-of-interest"
+    ],
+    "authors": [
+        {
+            "name": "Gustavo Freze de Araujo Santos",
+            "homepage": "https://github.com/gustavofreze"
+        }
+    ],
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "infection/extension-installer": true
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "PointsOfInterest\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PointsOfInterest\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^8.1",
+        "slim/psr7": "^1.5",
+        "slim/slim": "^4.10",
+        "doctrine/dbal": "^3.3",
+        "respect/validation": "^2.2",
+        "php-di/slim-bridge": "^3.2",
+        "tiny-blocks/http": "^1.0",
+        "tiny-blocks/serializer": "^1.0",
+        "tiny-blocks/value-object": "^1.0"
+    },
+    "require-dev": {
+        "infection/infection": "^0.26",
+        "phpmd/phpmd": "^2.12",
+        "phpunit/phpunit": "^9.5",
+        "squizlabs/php_codesniffer": "^3.7"
+    },
+    "scripts": {
+        "phpcs": "phpcs --standard=PSR12 --extensions=php ./src",
+        "phpmd": "phpmd ./src text phpmd.xml --suffixes php --exclude --ignore-violations-on-exit",
+        "test": "phpunit --log-junit=report/coverage/junit.xml --coverage-xml=report/coverage/coverage-xml --coverage-html=report/coverage/coverage-html tests",
+        "test-mutation": "infection --only-covered --logger-html=report/coverage/mutation-report.html --coverage=report/coverage --min-msi=100 --min-covered-msi=100 --threads=4",
+        "test-no-coverage": "phpunit --no-coverage",
+        "test-mutation-no-coverage": "infection --only-covered --min-msi=100 --threads=4",
+        "review": [
+            "@phpcs",
+            "@phpmd"
+        ],
+        "tests": [
+            "@test",
+            "@test-mutation"
+        ],
+        "tests-no-coverage": [
+            "@test-no-coverage",
+            "@test-mutation-no-coverage"
+        ]
+    }
+}
