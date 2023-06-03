@@ -9,8 +9,8 @@ final class CoordinateTest extends TestCase
 {
     public function testNegativeCoordinate(): void
     {
-        $this->expectErrorMessage('Coordinate value <-1> cannot be negative.');
-        $this->expectException(NegativeCoordinate::class);
+        self::expectException(NegativeCoordinate::class);
+        self::expectExceptionMessage('Coordinate value <-1> cannot be negative.');
 
         new Coordinate(value: -1);
     }

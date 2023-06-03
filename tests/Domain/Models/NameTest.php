@@ -9,8 +9,8 @@ final class NameTest extends TestCase
 {
     public function testNameCannotBeEmpty(): void
     {
-        $this->expectErrorMessage('The name cannot be empty.');
-        $this->expectException(NameCannotBeEmpty::class);
+        self::expectException(NameCannotBeEmpty::class);
+        self::expectExceptionMessage('The name cannot be empty.');
 
         new Name(value: '');
     }

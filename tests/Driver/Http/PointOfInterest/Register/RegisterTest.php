@@ -3,7 +3,7 @@
 namespace PointsOfInterest\Driver\Http\PointOfInterest\Register;
 
 use PHPUnit\Framework\TestCase;
-use PointsOfInterest\Domain\Boundaries\Points;
+use PointsOfInterest\Domain\Ports\Outbound\Points;
 use PointsOfInterest\Driver\Http\PointOfInterest\Register\Dtos\Request;
 use PointsOfInterest\Mock\RequestHttpMock;
 use Slim\Psr7\Request as SlimRequest;

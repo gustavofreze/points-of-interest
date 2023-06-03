@@ -6,17 +6,20 @@ DOCKER_NETWORK_PRUNE = docker network prune --force
 
 FLYWAY = docker run --rm -v ${PWD}/db/mysql/migrations:/flyway/sql --network=points-of-interest_default --env-file=config/configs.env flyway/flyway:9.1.2-alpine
 
-.PHONY: configure test test-no-coverage review show-reports stop clean clean-all
+.PHONY: configure run test test-no-coverage review show-reports stop clean clean-all
 
 configure:
 	@${DOCKER_COMPOSE} up -d --build
 	@${DOCKER_EXEC} composer update --optimize-autoloader
 	@${FLYWAY} migrate
 
-test: review
+run:
+	@${DOCKER_RUN} composer update --optimize-autoloader
+
+test: run review
 	@${DOCKER_RUN} composer tests
 
-test-no-coverage: review
+test-no-coverage: run review
 	@${DOCKER_RUN} composer tests-no-coverage
 
 review:

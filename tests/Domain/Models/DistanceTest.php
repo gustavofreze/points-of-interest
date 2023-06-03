@@ -9,8 +9,8 @@ final class DistanceTest extends TestCase
 {
     public function testNegativeDistance(): void
     {
-        $this->expectErrorMessage('The distance value <-1> must be a non-negative integer.');
-        $this->expectException(NegativeDistance::class);
+        self::expectException(NegativeDistance::class);
+        self::expectExceptionMessage('The distance value <-1> must be a non-negative integer.');
 
         new Distance(value: -1);
     }

@@ -15,7 +15,7 @@
 ## Overview
 
 Implementação do desafio
-[Pontos de Interesse por GPS](https://github.com/backend-br/desafios/tree/master/3%20-%20Hard/Pontos%20de%20Interesse),
+[Pontos de Interesse por GPS](https://github.com/backend-br/desafios/tree/master/03-Hard/PontosDeInteressePorGPS),
 do repositório backend-br.
 
 ### Pontos de Interesse por GPS
@@ -81,11 +81,11 @@ Cadastrar um ponto de interesse.
 
 ```json
 {
-    "name": "Pub",
-    "point": {
-        "x_coordinate": 12,
-        "y_coordinate": 8
-    }
+  "name": "Pub",
+  "point": {
+    "x_coordinate": 12,
+    "y_coordinate": 8
+  }
 }
 ```
 
@@ -98,11 +98,11 @@ Content-Type: application/json
 
 ```json
 {
-    "name": "Pub",
-    "point": {
-        "x_coordinate": 12,
-        "y_coordinate": 8
-    }
+  "name": "Pub",
+  "point": {
+    "x_coordinate": 12,
+    "y_coordinate": 8
+  }
 }
 ```
 
@@ -116,11 +116,11 @@ e `y_coordinate`).
 
 **Request**
 
-| Parâmetro       | Tipo | Descrição                              | Obrigatório |
-|:----------------|:----:|:---------------------------------------|:-----------:|
-| `distance`      | int  | Distância máxima em metros.            |     Não     |             
-| `x_coordinate`  | int  | Coordenada X do ponto de interesse.    |     Não     |             
-| `y_coordinate`  | int  | Coordenada Y do ponto de interesse.    |     Não     |
+| Parâmetro      | Tipo | Descrição                           | Obrigatório |
+|:---------------|:----:|:------------------------------------|:-----------:|
+| `distance`     | int  | Distância máxima em metros.         |     Não     |             
+| `x_coordinate` | int  | Coordenada X do ponto de interesse. |     Não     |             
+| `y_coordinate` | int  | Coordenada Y do ponto de interesse. |     Não     |
 
 **Response**
 
@@ -131,13 +131,13 @@ Content-Type: application/json
 
 ```json
 [
-    {
-        "name": "Pub",
-        "point": {
-            "x_coordinate": 12,
-            "y_coordinate": 8
-        }
+  {
+    "name": "Pub",
+    "point": {
+      "x_coordinate": 12,
+      "y_coordinate": 8
     }
+  }
 ]
 ```
 

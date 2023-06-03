@@ -4,7 +4,7 @@ namespace PointsOfInterest\Starter;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use PointsOfInterest\Domain\Boundaries\Points;
+use PointsOfInterest\Domain\Ports\Outbound\Points;
 use PointsOfInterest\Driven\PointsOfInterest\Repository\Adapter as PointsAdapter;
 
 use function DI\autowire;
