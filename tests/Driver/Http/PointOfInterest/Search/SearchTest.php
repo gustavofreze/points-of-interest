@@ -3,9 +3,9 @@
 namespace PointsOfInterest\Driver\Http\PointOfInterest\Search;
 
 use PHPUnit\Framework\TestCase;
-use PointsOfInterest\Domain\Boundaries\Points;
 use PointsOfInterest\Domain\Models\PointOfInterest;
 use PointsOfInterest\Domain\Models\PointsOfInterest;
+use PointsOfInterest\Domain\Ports\Outbound\Points;
 use PointsOfInterest\Mock\RequestHttpMock;
 use Slim\Psr7\Request as SlimRequest;
 use Slim\Psr7\Response;
