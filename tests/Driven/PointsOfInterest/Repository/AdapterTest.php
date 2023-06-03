@@ -5,8 +5,8 @@ namespace PointsOfInterest\Driven\PointsOfInterest\Repository;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Result;
 use PHPUnit\Framework\TestCase;
-use PointsOfInterest\Domain\Boundaries\Points;
 use PointsOfInterest\Domain\Models\PointOfInterest;
+use PointsOfInterest\Domain\Ports\Outbound\Points;
 
 final class AdapterTest extends TestCase
 {
@@ -24,7 +24,7 @@ final class AdapterTest extends TestCase
         /** @Dado que tenho um ponto de interesse válido */
         $pointOfInterest = $this->toAddPointOfInterest();
 
-        /** @Quando for solicitado a persistêcia desse ponto de interesse */
+        /** @Quando for solicitado a persistência desse ponto de interesse */
         $this->points->save(pointOfInterest: $pointOfInterest);
 
         /** @Então não deve ocorrer nenhum erro */

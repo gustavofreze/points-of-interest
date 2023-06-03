@@ -2,7 +2,7 @@
 
 namespace PointsOfInterest\Driver\Http\PointOfInterest\Register;
 
-use PointsOfInterest\Domain\Boundaries\Points;
+use PointsOfInterest\Domain\Ports\Outbound\Points;
 use PointsOfInterest\Driver\Http\PointOfInterest\Register\Dtos\Request;
 use PointsOfInterest\Driver\Http\PointOfInterest\Register\Dtos\Response;
 use PointsOfInterest\Driver\Http\PointOfInterest\Register\Exceptions\PointOfInterestAlreadyExists;

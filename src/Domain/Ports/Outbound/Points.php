@@ -1,6 +1,6 @@
 <?php
 
-namespace PointsOfInterest\Domain\Boundaries;
+namespace PointsOfInterest\Domain\Ports\Outbound;
 
 use PointsOfInterest\Domain\Models\PointOfInterest;
 use PointsOfInterest\Domain\Models\PointsOfInterest;

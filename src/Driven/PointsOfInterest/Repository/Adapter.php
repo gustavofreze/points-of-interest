@@ -5,9 +5,9 @@
 namespace PointsOfInterest\Driven\PointsOfInterest\Repository;
 
 use Doctrine\DBAL\Connection;
-use PointsOfInterest\Domain\Boundaries\Points;
 use PointsOfInterest\Domain\Models\PointOfInterest;
 use PointsOfInterest\Domain\Models\PointsOfInterest;
+use PointsOfInterest\Domain\Ports\Outbound\Points;
 
 final class Adapter implements Points
 {
