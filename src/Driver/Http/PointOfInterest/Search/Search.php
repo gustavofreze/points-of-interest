@@ -6,8 +6,9 @@ use PointsOfInterest\Domain\Ports\Outbound\Points;
 use PointsOfInterest\Driver\Http\PointOfInterest\Search\Dtos\Request;
 use PointsOfInterest\Driver\Http\PointOfInterest\Search\Dtos\Response;
 use PointsOfInterest\Driver\Http\Shared\HttpResponseAdapter;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use TinyBlocks\Http\HttpCode;
+use TinyBlocks\Http\HttpResponse;
 
 final class Search extends HttpResponseAdapter
 {
@@ -15,7 +16,7 @@ final class Search extends HttpResponseAdapter
     {
     }
 
-    protected function handle(ServerRequestInterface $request): array
+    protected function handle(ServerRequestInterface $request): ResponseInterface
     {
         $request = new Request(request: $request->getQueryParams());
         $pointsOfInterest = $this->points->findAll();
@@ -27,9 +28,8 @@ final class Search extends HttpResponseAdapter
                 maximumDistance: $request->toDistance()
             );
 
-        return $this
-            ->withHttpCode(httpCode: HttpCode::OK)
-            ->withResponse(httpResponse: (new Response(pointsOfInterest: $pointsOfInterest)))
-            ->reply();
+        $response = new Response(pointsOfInterest: $pointsOfInterest);
+
+        return HttpResponse::ok(data: $response->toArray());
     }
 }
