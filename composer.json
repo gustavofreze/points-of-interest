@@ -32,20 +32,20 @@
         }
     },
     "require": {
-        "php": "^8.1",
-        "slim/psr7": "^1.5",
-        "slim/slim": "^4.10",
-        "doctrine/dbal": "^3.3",
+        "php": "^8.2",
+        "slim/psr7": "^1.6",
+        "slim/slim": "4.11.0",
+        "doctrine/dbal": "^3.6",
         "respect/validation": "^2.2",
-        "php-di/slim-bridge": "^3.2",
-        "tiny-blocks/http": "^1.0",
+        "php-di/slim-bridge": "^3.3",
+        "tiny-blocks/http": "^2.1",
         "tiny-blocks/serializer": "^1.0",
         "tiny-blocks/value-object": "^1.0"
     },
     "require-dev": {
         "infection/infection": "^0.26",
         "phpmd/phpmd": "^2.13",
-        "phpunit/phpunit": "^9.5",
+        "phpunit/phpunit": "^9.6",
         "squizlabs/php_codesniffer": "^3.7"
     },
     "scripts": {
