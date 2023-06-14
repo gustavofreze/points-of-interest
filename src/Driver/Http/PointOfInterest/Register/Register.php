@@ -7,8 +7,9 @@ use PointsOfInterest\Driver\Http\PointOfInterest\Register\Dtos\Request;
 use PointsOfInterest\Driver\Http\PointOfInterest\Register\Dtos\Response;
 use PointsOfInterest\Driver\Http\PointOfInterest\Register\Exceptions\PointOfInterestAlreadyExists;
 use PointsOfInterest\Driver\Http\Shared\HttpResponseAdapter;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use TinyBlocks\Http\HttpCode;
+use TinyBlocks\Http\HttpResponse;
 
 final class Register extends HttpResponseAdapter
 {
@@ -16,7 +17,7 @@ final class Register extends HttpResponseAdapter
     {
     }
 
-    protected function handle(ServerRequestInterface $request): array
+    protected function handle(ServerRequestInterface $request): ResponseInterface
     {
         $request = new Request(request: $this->requestWithParsedBody());
         $pointOfInterest = $request->toPointOfInterest();
@@ -29,9 +30,8 @@ final class Register extends HttpResponseAdapter
 
         $this->points->save(pointOfInterest: $pointOfInterest);
 
-        return $this
-            ->withHttpCode(httpCode: HttpCode::CREATED)
-            ->withResponse(httpResponse: (new Response(pointOfInterest: $pointOfInterest)))
-            ->reply();
+        $response = new Response(pointOfInterest: $pointOfInterest);
+
+        return HttpResponse::created(data: $response);
     }
 }

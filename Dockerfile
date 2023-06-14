@@ -1,3 +1,3 @@
-FROM gustavofreze/php:8.1.7-fpm
+FROM gustavofreze/php:8.2.6-fpm
 
-RUN docker-php-ext-install mysqli pdo pdo_mysql
+RUN docker-php-ext-install mysqli pdo_mysql
