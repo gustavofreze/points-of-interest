@@ -39,8 +39,8 @@
         "respect/validation": "^2.2",
         "php-di/slim-bridge": "^3.3",
         "tiny-blocks/http": "^2.1",
-        "tiny-blocks/serializer": "^1.0",
-        "tiny-blocks/value-object": "^1.0"
+        "tiny-blocks/serializer": "^2.0",
+        "tiny-blocks/value-object": "^2.0"
     },
     "require-dev": {
         "infection/infection": "^0.26",

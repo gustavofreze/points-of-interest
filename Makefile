@@ -1,4 +1,4 @@
-DOCKER_RUN = docker run --rm -it --net=host -v ${PWD}:/app -w /app gustavofreze/php:8.2.6-fpm
+DOCKER_RUN = docker run --rm -it --net=host -v ${PWD}:/app -w /app gustavofreze/php:8.2-fpm
 DOCKER_EXEC = docker exec -it points-of-interest
 DOCKER_COMPOSE = docker-compose
 DOCKER_IMAGE_PRUNE = docker image prune --all --force
@@ -38,5 +38,5 @@ clean: stop
 clean-all: clean
 	@${DOCKER_IMAGE_PRUNE} --filter label="org.opencontainers.image.title"="Traefik"
 	@${DOCKER_IMAGE_PRUNE} --filter label="com.docker.compose.project"="points-of-interest"
-	@${DOCKER_IMAGE_PRUNE} --filter label="org.label-schema.name"="gustavofreze/php:8.1.7-fpm"
+	@${DOCKER_IMAGE_PRUNE} --filter label="org.label-schema.name"="gustavofreze/php:8.2-fpm"
 	@${DOCKER_IMAGE_PRUNE} --filter label="maintainer"="NGINX Docker Maintainers <docker-maint@nginx.com>"
