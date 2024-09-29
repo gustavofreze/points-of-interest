@@ -13,7 +13,7 @@ final class Queries
                         x_coordinate AS xCoordinate,
                         y_coordinate AS yCoordinate
                  FROM points_interest
-                 WHERE name = ? 
+                 WHERE name = ?
                     AND x_coordinate = ?
                     AND y_coordinate = ?;';
 

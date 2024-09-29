@@ -2,30 +2,19 @@
 
 namespace PointsOfInterest\Domain\Models;
 
-use TinyBlocks\Vo\ValueObject;
-use TinyBlocks\Vo\ValueObjectAdapter;
+use TinyBlocks\Collection\Collection;
 
-final class PointsOfInterest implements ValueObject
+final class PointsOfInterest extends Collection
 {
-    use ValueObjectAdapter;
-
-    /**
-     * @param PointOfInterest[] $values
-     */
-    public function __construct(public readonly array $values)
-    {
-    }
-
     public function byProximity(ReferencePoint $referencePoint, Distance $maximumDistance): PointsOfInterest
     {
-        $pointsOfInterest = [];
+        $pointsOfInterest = $this->filter(
+            predicates: fn(PointOfInterest $pointOfInterest): bool => $pointOfInterest->isCloseTo(
+                referencePoint: $referencePoint,
+                maximumDistance: $maximumDistance
+            )
+        );
 
-        foreach ($this->values as $pointOfInterest) {
-            if ($pointOfInterest->isCloseTo(referencePoint: $referencePoint, maximumDistance: $maximumDistance)) {
-                $pointsOfInterest[] = $pointOfInterest;
-            }
-        }
-
-        return new PointsOfInterest(values: $pointsOfInterest);
+        return PointsOfInterest::createFrom(elements: $pointsOfInterest);
     }
 }

@@ -2,59 +2,50 @@
 
 namespace PointsOfInterest\Domain\Models;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class PointsOfInterestTest extends TestCase
 {
-    /**
-     * @dataProvider providerForTestByProximity
-     */
-    public function testByProximity(array $points, array $expected): void
+    #[DataProvider('providerForTestByProximity')]
+    public function testByProximity(PointsOfInterest $points, PointsOfInterest $expected): void
     {
-        /** @Dado que tenho um ponto de referência indicado pelo receptor GPS */
+        /** @Given that I have a reference point indicated by the GPS receiver */
         $referencePoint = ReferencePoint::from(xCoordinate: 20, yCoordinate: 10);
 
-        /** @E que tenho uma distância máxima de 10 metros */
+        /** @And that I have a maximum distance of 10 meters */
         $maximumDistance = new Distance(value: 10);
 
-        /** @E uma lista de pontos de interesse */
-        $pointsOfInterest = new PointsOfInterest(values: $points);
+        /** @When the byProximity method is executed */
+        $actual = $points->byProximity(referencePoint: $referencePoint, maximumDistance: $maximumDistance);
 
-        /** @Quando o método byProximity for executado */
-        $actual = $pointsOfInterest->byProximity(referencePoint: $referencePoint, maximumDistance: $maximumDistance);
+        /** @Then four points of interest should be returned */
+        self::assertCount(4, $actual);
 
-        /** @Então devem ser retornados 04 pontos de interesse */
-        self::assertCount(4, $actual->values);
-
-        /** @E os pontos retornados devem ser exatamente os da lista de pontos esperados */
-        self::assertEquals($expected, $actual->values);
+        /** @And the points returned should exactly match the expected list of points */
+        self::assertTrue($expected->equals(other: $actual));
     }
 
-    /**
-     * @dataProvider providerForTestByExactProximity
-     */
-    public function testByExactProximity(array $points, array $expected): void
+    #[DataProvider('providerForTestByExactProximity')]
+    public function testByExactProximity(PointsOfInterest $points, PointsOfInterest $expected): void
     {
-        /** @Dado que tenho um ponto de referência indicado pelo receptor GPS */
+        /** @Given that I have a reference point indicated by the GPS receiver */
         $referencePoint = ReferencePoint::from(xCoordinate: 0, yCoordinate: 9999);
 
-        /** @E que tenho uma distância máxima de 0 metros */
+        /** @And that I have a maximum distance of 0 meters */
         $maximumDistance = new Distance(value: 0);
 
-        /** @E uma lista de pontos de interesse */
-        $pointsOfInterest = new PointsOfInterest(values: $points);
+        /** @When the byProximity method is executed */
+        $actual = $points->byProximity(referencePoint: $referencePoint, maximumDistance: $maximumDistance);
 
-        /** @Quando o método byProximity for executado */
-        $actual = $pointsOfInterest->byProximity(referencePoint: $referencePoint, maximumDistance: $maximumDistance);
+        /** @Then only one point of interest should be returned */
+        self::assertCount(1, $actual);
 
-        /** @Então deve ser retornado um único ponto de interesse */
-        self::assertCount(1, $actual->values);
-
-        /** @E o ponto retornado deve ser exatamente o da lista de pontos esperados */
-        self::assertEquals($expected, $actual->values);
+        /** @And the points returned should exactly match the expected list of points */
+        self::assertTrue($expected->equals(other: $actual));
     }
 
-    public function providerForTestByProximity(): array
+    public static function providerForTestByProximity(): iterable
     {
         $expected = [
             PointOfInterest::from(name: 'Pub', xCoordinate: 12, yCoordinate: 8),
@@ -63,40 +54,38 @@ final class PointsOfInterestTest extends TestCase
             PointOfInterest::from(name: 'Supermercado', xCoordinate: 23, yCoordinate: 6)
         ];
 
-        return [
-            [
-                'points'   => array_merge(
-                    [
-                        PointOfInterest::from(name: 'Posto', xCoordinate: 31, yCoordinate: 18),
-                        PointOfInterest::from(name: 'Churrascaria', xCoordinate: 28, yCoordinate: 2),
-                        PointOfInterest::from(name: 'Floricultura', xCoordinate: 19, yCoordinate: 21)
-                    ],
-                    $expected
-                ),
-                'expected' => $expected
-            ]
+        $points = PointsOfInterest::createFrom(elements: array_merge([
+            PointOfInterest::from(name: 'Posto', xCoordinate: 31, yCoordinate: 18),
+            PointOfInterest::from(name: 'Churrascaria', xCoordinate: 28, yCoordinate: 2),
+            PointOfInterest::from(name: 'Floricultura', xCoordinate: 19, yCoordinate: 21)
+        ], $expected));
+
+        $expectedPoints = PointsOfInterest::createFrom(elements: $expected);
+
+        yield [
+            'points'   => $points,
+            'expected' => $expectedPoints
         ];
     }
 
-    public function providerForTestByExactProximity(): array
+    public static function providerForTestByExactProximity(): iterable
     {
         $expected = [
             PointOfInterest::from(name: 'Academia', xCoordinate: 0, yCoordinate: 9999)
         ];
 
-        return [
-            [
-                'points'   => array_merge(
-                    [
-                        PointOfInterest::from(name: 'Posto', xCoordinate: 31, yCoordinate: 18),
-                        PointOfInterest::from(name: 'Joalheria', xCoordinate: 15, yCoordinate: 12),
-                        PointOfInterest::from(name: 'Lanchonete', xCoordinate: 27, yCoordinate: 12),
-                        PointOfInterest::from(name: 'Churrascaria', xCoordinate: 28, yCoordinate: 2)
-                    ],
-                    $expected
-                ),
-                'expected' => $expected
-            ]
+        $points = PointsOfInterest::createFrom(elements: array_merge([
+            PointOfInterest::from(name: 'Posto', xCoordinate: 31, yCoordinate: 18),
+            PointOfInterest::from(name: 'Joalheria', xCoordinate: 15, yCoordinate: 12),
+            PointOfInterest::from(name: 'Lanchonete', xCoordinate: 27, yCoordinate: 12),
+            PointOfInterest::from(name: 'Churrascaria', xCoordinate: 28, yCoordinate: 2)
+        ], $expected));
+
+        $expectedPoints = PointsOfInterest::createFrom(elements: $expected);
+
+        yield [
+            'points'   => $points,
+            'expected' => $expectedPoints
         ];
     }
 }

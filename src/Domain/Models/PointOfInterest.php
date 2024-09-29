@@ -5,15 +5,12 @@ namespace PointsOfInterest\Domain\Models;
 use TinyBlocks\Vo\ValueObject;
 use TinyBlocks\Vo\ValueObjectAdapter;
 
-final class PointOfInterest implements ValueObject
+final readonly class PointOfInterest implements ValueObject
 {
     use ValueObjectAdapter;
 
-    public function __construct(
-        public readonly Name $name,
-        public readonly Coordinate $xCoordinate,
-        public readonly Coordinate $yCoordinate
-    ) {
+    public function __construct(public Name $name, public Coordinate $xCoordinate, public Coordinate $yCoordinate)
+    {
     }
 
     public static function from(string $name, int $xCoordinate, int $yCoordinate): PointOfInterest

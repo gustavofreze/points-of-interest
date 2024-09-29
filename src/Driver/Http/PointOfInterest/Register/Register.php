@@ -32,6 +32,6 @@ final class Register extends HttpResponseAdapter
 
         $response = new Response(pointOfInterest: $pointOfInterest);
 
-        return HttpResponse::created(data: $response);
+        return HttpResponse::created(data: $response->toArray());
     }
 }

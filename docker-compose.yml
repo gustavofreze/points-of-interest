@@ -1,8 +1,19 @@
-version: '3.8'
+version: '3.9'
 
 services:
+  points-of-interest:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    container_name: points-of-interest
+    env_file:
+      - config/local.env
+    volumes:
+      - ./:/var/www/html
+
   points-of-interest-adm:
-    image: mysql:8.0.29
+    image: mysql:8.1
     restart: always
     hostname: points-of-interest-adm
     container_name: points-of-interest-adm
@@ -15,21 +26,6 @@ services:
     volumes:
       - ./db/mysql/config:/scripts/config
       - ./db/mysql/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
-
-  points-of-interest:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    restart: always
-    container_name: points-of-interest
-    env_file:
-      - ./config/configs.env
-    depends_on:
-      - points-of-interest-adm
-    volumes:
-      - ./src:/var/www/html/src
-      - ./public:/var/www/html/public
-      - ./composer.json:/var/www/html/composer.json
 
   nginx:
     container_name: nginx

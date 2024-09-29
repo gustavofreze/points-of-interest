@@ -6,11 +6,11 @@ use PointsOfInterest\Domain\Exceptions\NegativeCoordinate;
 use TinyBlocks\Vo\ValueObject;
 use TinyBlocks\Vo\ValueObjectAdapter;
 
-final class Coordinate implements ValueObject
+final readonly class Coordinate implements ValueObject
 {
     use ValueObjectAdapter;
 
-    public function __construct(public readonly int $value)
+    public function __construct(public int $value)
     {
         if ($this->value < 0) {
             throw new NegativeCoordinate(value: $this->value);

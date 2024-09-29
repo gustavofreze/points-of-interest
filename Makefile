@@ -1,42 +1,48 @@
-DOCKER_RUN = docker run --rm -it --net=host -v ${PWD}:/app -w /app gustavofreze/php:8.2-fpm
-DOCKER_EXEC = docker exec -it points-of-interest
-DOCKER_COMPOSE = docker-compose
-DOCKER_IMAGE_PRUNE = docker image prune --all --force
-DOCKER_NETWORK_PRUNE = docker network prune --force
+PWD := $(shell pwd -L)
+PHP_IMAGE := gustavofreze/php:8.2
+APP_RUN := docker run -u root --rm -it --network=host -v ${PWD}:/app -w /app ${PHP_IMAGE}
 
-FLYWAY = docker run --rm -v ${PWD}/db/mysql/migrations:/flyway/sql --network=points-of-interest_default --env-file=config/configs.env flyway/flyway:9.19.4-alpine
+FLYWAY_IMAGE := flyway/flyway:10.10.0
+FLYWAY_RUN := docker run --rm -v ${PWD}/db/mysql/migrations:/flyway/sql --env-file=config/local.env --link points-of-interest-adm --network=points-of-interest_default ${FLYWAY_IMAGE}
+MIGRATE_DB := ${FLYWAY_RUN} -locations=filesystem:/flyway/sql -schemas=poi_adm
 
-.PHONY: configure run test test-no-coverage review show-reports stop clean clean-all
+.DEFAULT_GOAL := help
 
-configure:
-	@${DOCKER_COMPOSE} up -d --build
-	@${DOCKER_EXEC} composer update --optimize-autoloader
-	@${FLYWAY} migrate
+.PHONY: start configure test review fix-style show-coverage clean migrate-database clean-database help
 
-run:
-	@${DOCKER_RUN} composer update --optimize-autoloader
+start: ## Start Docker compose services
+	@docker-compose up -d --build
 
-test: run review
-	@${DOCKER_RUN} composer tests
+configure: ## Configure development environment
+	@${APP_RUN} composer update --optimize-autoloader
 
-test-no-coverage: run review
-	@${DOCKER_RUN} composer tests-no-coverage
+test: ## Run all tests
+	@${APP_RUN} composer run tests
 
-review:
-	@${DOCKER_RUN} composer review
+review: ## Run code review
+	@${APP_RUN} composer review
 
-show-reports:
+fix-style: ## Fix code style
+	@${APP_RUN} composer fix-style
+
+show-coverage: ## Open code coverage reports in browser
 	@sensible-browser report/coverage/coverage-html/index.html report/coverage/mutation-report.html
 
-stop:
-	@${DOCKER_COMPOSE} stop $(docker ps -a -q)
+migrate-database: ## Run database migrations
+	@${MIGRATE_DB} migrate
 
-clean: stop
-	@${DOCKER_COMPOSE} rm -vf $(docker ps -a -q)
-	@${DOCKER_NETWORK_PRUNE} --filter label="com.docker.compose.project"="points-of-interest"
+clean-database: ## Clean database
+	@${MIGRATE_DB} clean
 
-clean-all: clean
-	@${DOCKER_IMAGE_PRUNE} --filter label="org.opencontainers.image.title"="Traefik"
-	@${DOCKER_IMAGE_PRUNE} --filter label="com.docker.compose.project"="points-of-interest"
-	@${DOCKER_IMAGE_PRUNE} --filter label="org.label-schema.name"="gustavofreze/php:8.2-fpm"
-	@${DOCKER_IMAGE_PRUNE} --filter label="maintainer"="NGINX Docker Maintainers <docker-maint@nginx.com>"
+help: ## Display this help message
+	@echo "Usage: make [target]"
+	@echo ""
+	@echo "Setup and run"
+	@grep -E '^(configure|start|migrate-database|clean-database):.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@echo ""
+	@echo "Testing"
+	@grep -E '^(test|show-coverage):.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@echo ""
+	@echo "Code review "
+	@grep -E '^(review|fix-style):.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@echo ""

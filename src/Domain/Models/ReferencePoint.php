@@ -5,11 +5,11 @@ namespace PointsOfInterest\Domain\Models;
 use TinyBlocks\Vo\ValueObject;
 use TinyBlocks\Vo\ValueObjectAdapter;
 
-final class ReferencePoint implements ValueObject
+final readonly class ReferencePoint implements ValueObject
 {
     use ValueObjectAdapter;
 
-    public function __construct(public readonly Coordinate $xCoordinate, public readonly Coordinate $yCoordinate)
+    public function __construct(public Coordinate $xCoordinate, public Coordinate $yCoordinate)
     {
     }
 

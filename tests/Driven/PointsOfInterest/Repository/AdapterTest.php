@@ -2,177 +2,124 @@
 
 namespace PointsOfInterest\Driven\PointsOfInterest\Repository;
 
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Result;
 use PHPUnit\Framework\TestCase;
 use PointsOfInterest\Domain\Models\PointOfInterest;
 use PointsOfInterest\Domain\Ports\Outbound\Points;
+use PointsOfInterest\Driven\PointsOfInterest\Repository\Mocks\ConnectionMock;
 
 final class AdapterTest extends TestCase
 {
     private Points $points;
-    private Connection $connection;
+    private ConnectionMock $connection;
 
     protected function setUp(): void
     {
-        $this->connection = $this->createMock(Connection::class);
+        $this->connection = new ConnectionMock();
         $this->points = new Adapter(connection: $this->connection);
     }
 
     public function testSave(): void
     {
-        /** @Dado que tenho um ponto de interesse válido */
-        $pointOfInterest = $this->toAddPointOfInterest();
+        /** @Given I have a valid point of interest */
+        $pointOfInterest = PointOfInterest::from(
+            name: 'Pub',
+            xCoordinate: rand(1, 1000),
+            yCoordinate: rand(1, 1000)
+        );
 
-        /** @Quando for solicitado a persistência desse ponto de interesse */
+        /** @When the persistence of this point of interest is requested */
         $this->points->save(pointOfInterest: $pointOfInterest);
 
-        /** @Então não deve ocorrer nenhum erro */
-        $this->addToAssertionCount(1);
-    }
+        /** @Then the point of interest should be inserted */
+        $actual = $this->connection->lastInserted();
+        self::assertNotEmpty($actual);
 
-    public function testFindReturningPointOfInterest(): void
-    {
-        /** @Dado que tenho um ponto de interesse qualquer persistidos no banco de dados */
-        $pointOfInterest = $this->addedPointOfInterest();
-
-        /** @Quando esse ponto for solicitado */
-        $actual = $this->points->find(pointOfInterest: $pointOfInterest);
-
-        /** @Então os dados retornados devem ser iguais aos dados persistidos */
-        self::assertEquals($pointOfInterest->values(), $actual->values());
+        /** @And the inserted data should match the point of interest */
+        $expected = [
+            'name'        => $pointOfInterest->name->value,
+            'xCoordinate' => $pointOfInterest->xCoordinate->value,
+            'yCoordinate' => $pointOfInterest->yCoordinate->value,
+        ];
+        self::assertEquals($expected, $actual);
     }
 
     public function testFindReturningNull(): void
     {
-        /** @Dado um ponto de interesse de qualquer */
-        $pointOfInterest = PointOfInterest::from(name: 'Pub', xCoordinate: rand(1, 1000), yCoordinate: rand(1, 1000));
+        /** @Given I have a point of interest that is not saved in the database */
+        $pointOfInterest = PointOfInterest::from(
+            name: 'Nonexistent Pub',
+            xCoordinate: 999,
+            yCoordinate: 999
+        );
 
-        /** @E que esse ponto não esteja persistido no banco de dados */
-        $this->removePointOfInterest(pointOfInterest: $pointOfInterest);
-
-        /** @Quando esse ponto for solicitado */
+        /** @When this point is requested */
         $actual = $this->points->find(pointOfInterest: $pointOfInterest);
 
-        /** @Então não deve ser retornado nenhum ponto de interesse */
+        /** @Then no point of interest should be returned */
         self::assertNull($actual);
-    }
-
-    public function testFindAllReturningPointsOfInterest(): void
-    {
-        /** @Dado que tenho pontos de interesses persistidos no banco de dados */
-        $pointsOfInterest = $this->addedPointsOfInterest(points: [
-            PointOfInterest::from(name: 'Pub', xCoordinate: rand(1, 1000), yCoordinate: rand(1, 1000)),
-            PointOfInterest::from(name: 'Churrascaria', xCoordinate: rand(1, 1000), yCoordinate: rand(1, 1000))
-        ]);
-
-        /** @Quando esses pontos são solicitados */
-        $actual = $this->points->findAll();
-
-        /** @Então eles devem ser retornados */
-        self::assertCount(2, $actual->values);
-
-        /** @E os dados retornados devem ser iguais aos pontos persistidos */
-        self::assertEquals($pointsOfInterest, $actual->values);
     }
 
     public function testFindAllReturningEmpty(): void
     {
-        /** @Dado que não tenho pontos de interesses persistidos no banco de dados */
-        $this->removePointsOfInterest();
+        /** @Given no points of interest are saved in the database */
+        $this->connection->deleteAll();
 
-        /** @Quando esses pontos são solicitados */
+        /** @When all points of interest are requested */
         $actual = $this->points->findAll();
 
-        /** @Então não deve ser retornado nenhum ponto de interesse */
-        self::assertEmpty($actual->values);
-        self::assertCount(0, $actual->values);
+        /** @Then no points of interest should be returned */
+        self::assertTrue($actual->isEmpty());
     }
 
-    private function addedPointOfInterest(): PointOfInterest
+    public function testFindReturningPointOfInterest(): void
     {
-        $pointOfInterest = PointOfInterest::from(name: 'Pub', xCoordinate: rand(1, 1000), yCoordinate: rand(1, 1000));
+        /** @Given I have a point of interest saved in the database */
+        $pointOfInterest = PointOfInterest::from(name: 'Pub', xCoordinate: 12, yCoordinate: 34);
 
-        $point = [
-            'name'        => $pointOfInterest->name->value,
-            'xCoordinate' => $pointOfInterest->xCoordinate->value,
-            'yCoordinate' => $pointOfInterest->yCoordinate->value
+        /** @And I have inserted points */
+        $this->points->save(pointOfInterest: $pointOfInterest);
+
+        /** @When this point is requested */
+        $actual = $this->points->find(pointOfInterest: $pointOfInterest);
+
+        /** @Then the point of interest should be returned */
+        self::assertNotNull($actual);
+
+        /** @And the returned point of interest should match the saved point */
+        self::assertEquals($pointOfInterest->values(), $actual->values());
+    }
+
+    public function testFindAllReturningPointsOfInterest(): void
+    {
+        /** @Given I have multiple points of interest saved in the database */
+        $pointsOfInterest = [
+            PointOfInterest::from(name: 'Pub', xCoordinate: 12, yCoordinate: 34),
+            PointOfInterest::from(name: 'Churrascaria', xCoordinate: 56, yCoordinate: 78)
         ];
 
-        $result = $this->createMock(Result::class);
-        $result->expects(self::once())
-            ->method('fetchAssociative')
-            ->will(self::returnValue($point));
+        $this->points->save(pointOfInterest: $pointsOfInterest[0]);
+        $this->points->save(pointOfInterest: $pointsOfInterest[1]);
 
-        $this->connection->expects(self::once())
-            ->method('executeQuery')
-            ->with(Queries::FIND, [
-                $pointOfInterest->name->value,
-                $pointOfInterest->xCoordinate->value,
-                $pointOfInterest->yCoordinate->value
-            ])
-            ->will(self::returnValue($result));
+        /** @When all points of interest are requested */
+        $actual = $this->points->findAll();
 
-        return $pointOfInterest;
-    }
+        /** @Then the points of interest should be returned */
+        self::assertCount(2, $actual);
 
-    private function toAddPointOfInterest(): PointOfInterest
-    {
-        $pointOfInterest = PointOfInterest::from(name: 'Pub', xCoordinate: rand(1, 1000), yCoordinate: rand(1, 1000));
+        /** @And the returned points of interest should match the saved points */
+        $expected = [
+            [
+                'name'        => ['value' => 'Pub'],
+                'xCoordinate' => ['value' => 12],
+                'yCoordinate' => ['value' => 34]
+            ],
+            [
+                'name'        => ['value' => 'Churrascaria'],
+                'xCoordinate' => ['value' => 56],
+                'yCoordinate' => ['value' => 78]
+            ]
+        ];
 
-        $this->connection->expects(self::once())
-            ->method('executeQuery')
-            ->with(Queries::INSERT, [
-                $pointOfInterest->name->value,
-                $pointOfInterest->xCoordinate->value,
-                $pointOfInterest->yCoordinate->value
-            ]);
-
-        return $pointOfInterest;
-    }
-
-    private function addedPointsOfInterest(array $points): array
-    {
-        $mapper = fn(PointOfInterest $pointOfInterest) => ([
-            'name'        => $pointOfInterest->name->value,
-            'xCoordinate' => $pointOfInterest->xCoordinate->value,
-            'yCoordinate' => $pointOfInterest->yCoordinate->value
-        ]);
-
-        $result = $this->createMock(Result::class);
-        $result->expects(self::once())
-            ->method('fetchAllAssociative')
-            ->will(self::returnValue(array_map($mapper, $points)));
-
-        $this->connection->expects(self::once())
-            ->method('executeQuery')
-            ->with(Queries::FIND_ALL, [])
-            ->will(self::returnValue($result));
-
-        return $points;
-    }
-
-    private function removePointOfInterest(PointOfInterest $pointOfInterest): void
-    {
-        $result = $this->createMock(Result::class);
-
-        $this->connection->expects(self::once())
-            ->method('executeQuery')
-            ->with(Queries::FIND, [
-                $pointOfInterest->name->value,
-                $pointOfInterest->xCoordinate->value,
-                $pointOfInterest->yCoordinate->value
-            ])
-            ->will(self::returnValue($result));
-    }
-
-    private function removePointsOfInterest(): void
-    {
-        $result = $this->createMock(Result::class);
-
-        $this->connection->expects(self::once())
-            ->method('executeQuery')
-            ->with(Queries::FIND_ALL, [])
-            ->will(self::returnValue($result));
+        self::assertEquals($expected, $actual->toArray());
     }
 }

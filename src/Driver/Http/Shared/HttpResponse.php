@@ -2,9 +2,12 @@
 
 namespace PointsOfInterest\Driver\Http\Shared;
 
-use TinyBlocks\Serializer\Serializer;
-
-interface HttpResponse extends Serializer
+interface HttpResponse
 {
+    /**
+     * Converts the response to an array.
+     *
+     * @return array The response as an array.
+     */
     public function toArray(): array;
 }

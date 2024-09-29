@@ -8,9 +8,9 @@ use Slim\App;
 use Slim\Handlers\Strategies\RequestResponseArgs;
 use Slim\Interfaces\RouteCollectorProxyInterface;
 
-final class Routes
+final readonly class Routes
 {
-    public function __construct(private readonly App $app)
+    public function __construct(private App $app)
     {
         $routeCollector = $this->app->getRouteCollector();
         $routeCollector->setDefaultInvocationStrategy(new RequestResponseArgs());

@@ -6,11 +6,11 @@ use PointsOfInterest\Domain\Exceptions\NegativeDistance;
 use TinyBlocks\Vo\ValueObject;
 use TinyBlocks\Vo\ValueObjectAdapter;
 
-final class Distance implements ValueObject
+final readonly class Distance implements ValueObject
 {
     use ValueObjectAdapter;
 
-    public function __construct(public readonly int $value)
+    public function __construct(public int $value)
     {
         if ($this->value < 0) {
             throw new NegativeDistance(value: $this->value);

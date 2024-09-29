@@ -1,15 +1,15 @@
 {
     "timeout": 10,
     "testFramework": "phpunit",
-    "tmpDir": "report/",
+    "tmpDir": "report/infection/",
     "source": {
         "directories": [
             "src"
         ]
     },
     "logs": {
-        "text": "report/logs/infection-text.log",
-        "summary": "report/logs/infection-summary.log"
+        "text": "report/infection/logs/infection-text.log",
+        "summary": "report/infection/logs/infection-summary.log"
     },
     "mutators": {
         "@default": true,

@@ -161,31 +161,19 @@ git clone https://github.com/gustavofreze/points-of-interest.git
 
 ### Configuração
 
+Para instalar dependências do projeto localmente, execute:
+
 ```bash
 make configure
 ```
 
-<div id="useful"></div> 
+Para iniciar os contêineres do projeto, execute:
 
-## Úteis
+```bash
+make start
+```
 
-- Para todos os containers do projeto:
-
-  ```bash
-  make stop
-  ```
-
-- Remove todos os containers e networks criados pelo projeto:
-
-  ```bash
-  make clean
-  ```
-
-- Remove todos os containers, networks e imagens criados pelo projeto:
-
-  ```bash
-  make clean-all
-  ```
+> Você pode verificar outros comandos disponíveis executando `make help`.
 
 <div id='faq'></div> 
 

@@ -8,9 +8,9 @@ use PointsOfInterest\Driver\Http\Shared\Exceptions\InvalidRequest;
 use Respect\Validation\Exceptions\ValidationException;
 use Respect\Validation\Validator;
 
-final class Request
+final readonly class Request
 {
-    public function __construct(private readonly array $request)
+    public function __construct(private array $request)
     {
         $this->validate();
     }

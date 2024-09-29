@@ -6,11 +6,11 @@ use PointsOfInterest\Domain\Models\PointOfInterest;
 use PointsOfInterest\Driver\Http\Shared\HttpResponse;
 use TinyBlocks\Serializer\SerializerAdapter;
 
-final class Response implements HttpResponse
+final readonly class Response implements HttpResponse
 {
     use SerializerAdapter;
 
-    public function __construct(private readonly PointOfInterest $pointOfInterest)
+    public function __construct(private PointOfInterest $pointOfInterest)
     {
     }
 

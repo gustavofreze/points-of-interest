@@ -23,16 +23,16 @@ final class RegisterTest extends TestCase
 
     public function testInvalidRequest(): void
     {
-        /** @Dado que tenho um ponto de interesse inválido */
+        /** @Given that I have an invalid point of interest */
         $body = ['point' => ['x_coordinate' => rand(1, 10000), 'y_coordinate' => rand(1, 10000)]];
 
-        /** @E que eu faça uma solicitação de registro com os dados desse ponto de interesse */
+        /** @And that I make a registration request with the data of this point of interest */
         $request = $this->request(body: $body);
 
-        /** @Quando a operação de registrar for executada com essa solicitação */
+        /** @When the register operation is executed with this request */
         $response = $this->register->__invoke(request: $request, response: new Response());
 
-        /** @Então um erro indicando solicitação inválida deve ser retornado */
+        /** @Then an error indicating an invalid request should be returned */
         $message = '{"error":{"name":"name must be present"}}';
         self::assertEquals(HttpCode::UNPROCESSABLE_ENTITY->value, $response->getStatusCode());
         self::assertEquals($message, $response->getBody()->__toString());
@@ -40,19 +40,19 @@ final class RegisterTest extends TestCase
 
     public function testPointOfInterestAlreadyExists(): void
     {
-        /** @Dado que tenho um ponto de interesse válido */
+        /** @Given that I have a valid point of interest */
         $body = ['name' => 'xpto', 'point' => ['x_coordinate' => rand(1, 10000), 'y_coordinate' => rand(1, 10000)]];
 
-        /** @E que esse ponto de interesse já tenha sido registrado anteriormente */
+        /** @And that this point of interest has already been registered before */
         $this->addPointOfInterest(body: $body);
 
-        /** @E que eu faça uma solicitação de registro com os dados desse ponto de interesse */
+        /** @And that I make a registration request with the data of this point of interest */
         $request = $this->request(body: $body);
 
-        /** @Quando a operação de registrar for executada com essa solicitação */
+        /** @When the register operation is executed with this request */
         $response = $this->register->__invoke(request: $request, response: new Response());
 
-        /** @Então um erro indicando que o ponto já existe deve ser retornado */
+        /** @Then an error indicating that the point already exists should be returned */
         $template = 'A point of interest with name <%s>, x coordinate <%s> and y coordinate <%s> already exists.';
         $message = json_encode([
             'error' => sprintf(
@@ -68,16 +68,16 @@ final class RegisterTest extends TestCase
 
     public function testRegisterPointOfInterest(): void
     {
-        /** @Dado que tenho um ponto de interesse válido */
+        /** @Given that I have a valid point of interest */
         $body = ['name' => 'xpto', 'point' => ['x_coordinate' => rand(1, 10000), 'y_coordinate' => rand(1, 10000)]];
 
-        /** @E que eu faça uma solicitação de registro com os dados desse ponto de interesse */
+        /** @And that I make a registration request with the data of this point of interest */
         $request = $this->request(body: $body);
 
-        /** @Quando a operação de registrar for executada com essa solicitação */
+        /** @When the register operation is executed with this request */
         $response = $this->register->__invoke(request: $request, response: new Response());
 
-        /** @Então o registro do ponto deve ocorrer com sucesso */
+        /** @Then the point should be registered successfully */
         self::assertEquals(HttpCode::CREATED->value, $response->getStatusCode());
         self::assertEquals($body, json_decode($response->getBody()->__toString(), true));
     }
@@ -95,6 +95,6 @@ final class RegisterTest extends TestCase
         $this->points->expects(self::once())
             ->method('find')
             ->with($pointOfInterest)
-            ->will(self::returnValue($pointOfInterest));
+            ->willReturn($pointOfInterest);
     }
 }
