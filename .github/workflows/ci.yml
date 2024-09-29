@@ -1,7 +1,6 @@
 name: CI
 
 on:
-  push:
   pull_request:
 
 permissions:
@@ -16,14 +15,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Configure PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
       - name: Install dependencies
         run: composer update --no-progress --optimize-autoloader
 
-      - name: Run phpcs
-        run: composer phpcs
-
-      - name: Run phpmd
-        run: composer phpmd
+      - name: Run review
+        run: composer review
 
   tests:
     name: Tests
@@ -33,13 +34,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Configure PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
       - name: Install dependencies
         run: composer update --no-progress --optimize-autoloader
 
-      - name: Run unit tests
+      - name: Run tests
         env:
           XDEBUG_MODE: coverage
-        run: composer test
-
-      - name: Run mutation tests
-        run: composer test-mutation
+        run: composer unit-test
