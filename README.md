@@ -7,7 +7,6 @@
 * [Instalação](#installation)
     - [Repositório](#repository)
     - [Configuração](#configure)
-* [Úteis](#useful)
 * [FAQ](#faq)
 
 <div id="overview"></div> 
@@ -63,9 +62,9 @@ retornar os seguintes POIs:
 
 URLs de acesso:
 
-| Ambiente | DNS                                    | 
-|:---------|:---------------------------------------|
-| `Local`  | http://points-of-interest.localhost:81 |
+| Ambiente | DNS                                 | 
+|:---------|:------------------------------------|
+| `Local`  | http://points-of-interest.localhost |
 
 ### Cadastrar POI
 

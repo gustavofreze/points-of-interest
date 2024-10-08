@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PointsOfInterest\Driven\PointsOfInterest\Repository\Mocks;
 
 use Doctrine\DBAL\Cache\QueryCacheProfile;
@@ -13,6 +15,7 @@ final class ConnectionMock extends Connection
 
     public function __construct()
     {
+        parent::__construct([], new DriverMock());
     }
 
     public function executeQuery(
