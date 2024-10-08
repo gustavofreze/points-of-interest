@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PointsOfInterest\Driven\PointsOfInterest\Repository;
 
 use PHPUnit\Framework\TestCase;
@@ -40,7 +42,7 @@ final class AdapterTest extends TestCase
             'xCoordinate' => $pointOfInterest->xCoordinate->value,
             'yCoordinate' => $pointOfInterest->yCoordinate->value,
         ];
-        self::assertEquals($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
     public function testFindReturningNull(): void
@@ -86,7 +88,9 @@ final class AdapterTest extends TestCase
         self::assertNotNull($actual);
 
         /** @And the returned point of interest should match the saved point */
-        self::assertEquals($pointOfInterest->values(), $actual->values());
+        self::assertSame($pointOfInterest->name->value, $actual->name->value);
+        self::assertSame($pointOfInterest->xCoordinate->value, $actual->xCoordinate->value);
+        self::assertSame($pointOfInterest->yCoordinate->value, $actual->yCoordinate->value);
     }
 
     public function testFindAllReturningPointsOfInterest(): void
@@ -120,6 +124,6 @@ final class AdapterTest extends TestCase
             ]
         ];
 
-        self::assertEquals($expected, $actual->toArray());
+        self::assertSame($expected, $actual->toArray());
     }
 }

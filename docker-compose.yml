@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   points-of-interest:
     build:
@@ -29,29 +27,36 @@ services:
 
   nginx:
     container_name: nginx
-    image: nginx:1.23.0
+    image: nginx:1.27-alpine
     restart: always
     depends_on:
       - points-of-interest
     volumes:
       - ./public:/var/www/html
-      - ./config/nginx/nginx.conf:/etc/nginx/conf.d/site.conf
+      - ./config/nginx/site.conf:/etc/nginx/conf.d/site.conf
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.nginx.entrypoints=http"
       - "traefik.http.routers.nginx.rule=Host(`points-of-interest.localhost`)"
 
   reverse-proxy:
-    container_name: reverse-proxy
-    image: traefik:v2.8.1
+    image: traefik:3.2
     restart: always
+    container_name: reverse-proxy
     command:
+      - "--log.level=INFO"
+      - "--accesslog=true"
       - "--api.insecure=true"
+      - "--api.dashboard=true"
       - "--providers.docker=true"
+      - "--entrypoints.http.address=:80"
       - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.http.address=:81"
     ports:
-      - "81:81"
+      - "80:80"
       - "8080:8080"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.localhost`)"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - /var/run/docker.sock:/var/run/docker.sock:ro

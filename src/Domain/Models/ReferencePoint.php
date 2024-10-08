@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PointsOfInterest\Domain\Models;
 
 use TinyBlocks\Vo\ValueObject;
-use TinyBlocks\Vo\ValueObjectAdapter;
+use TinyBlocks\Vo\ValueObjectBehavior;
 
 final readonly class ReferencePoint implements ValueObject
 {
-    use ValueObjectAdapter;
+    use ValueObjectBehavior;
 
     public function __construct(public Coordinate $xCoordinate, public Coordinate $yCoordinate)
     {

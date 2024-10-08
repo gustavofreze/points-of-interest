@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PointsOfInterest\Domain\Ports\Outbound;
 
 use PointsOfInterest\Domain\Models\PointOfInterest;

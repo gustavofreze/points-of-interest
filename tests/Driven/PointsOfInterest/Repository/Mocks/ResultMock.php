@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PointsOfInterest\Driven\PointsOfInterest\Repository\Mocks;
 
 use Doctrine\DBAL\Result;
