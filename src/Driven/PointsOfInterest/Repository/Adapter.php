@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PointsOfInterest\Driven\PointsOfInterest\Repository;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Exception;
 use PointsOfInterest\Domain\Models\PointOfInterest;
 use PointsOfInterest\Domain\Models\PointsOfInterest;
 use PointsOfInterest\Domain\Ports\Outbound\Points;
-use TinyBlocks\Collection\Collectible;
 
 final readonly class Adapter implements Points
 {
@@ -39,16 +39,12 @@ final readonly class Adapter implements Points
         }
 
         return PointOfInterest::from(
-            name: $result['name'],
-            xCoordinate: $result['xCoordinate'],
-            yCoordinate: $result['yCoordinate']
+            name: (string)$result['name'],
+            xCoordinate: (int)$result['xCoordinate'],
+            yCoordinate: (int)$result['yCoordinate']
         );
     }
 
-    /**
-     * @return Collectible<PointsOfInterest>
-     * @throws Exception
-     */
     public function findAll(): PointsOfInterest
     {
         $result = $this->connection
@@ -57,9 +53,9 @@ final readonly class Adapter implements Points
 
         return PointsOfInterest::createFrom(elements: $result)
             ->map(transformations: fn(array $item) => PointOfInterest::from(
-                name: $item['name'],
-                xCoordinate: $item['xCoordinate'],
-                yCoordinate: $item['yCoordinate']
+                name: (string)$item['name'],
+                xCoordinate: (int)$item['xCoordinate'],
+                yCoordinate: (int)$item['yCoordinate']
             ));
     }
 }

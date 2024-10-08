@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PointsOfInterest\Domain\Models;
 
 use PointsOfInterest\Domain\Exceptions\NegativeDistance;
 use TinyBlocks\Vo\ValueObject;
-use TinyBlocks\Vo\ValueObjectAdapter;
+use TinyBlocks\Vo\ValueObjectBehavior;
 
 final readonly class Distance implements ValueObject
 {
-    use ValueObjectAdapter;
+    use ValueObjectBehavior;
 
     public function __construct(public int $value)
     {

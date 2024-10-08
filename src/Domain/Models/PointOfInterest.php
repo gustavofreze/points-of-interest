@@ -3,11 +3,11 @@
 namespace PointsOfInterest\Domain\Models;
 
 use TinyBlocks\Vo\ValueObject;
-use TinyBlocks\Vo\ValueObjectAdapter;
+use TinyBlocks\Vo\ValueObjectBehavior;
 
 final readonly class PointOfInterest implements ValueObject
 {
-    use ValueObjectAdapter;
+    use ValueObjectBehavior;
 
     public function __construct(public Name $name, public Coordinate $xCoordinate, public Coordinate $yCoordinate)
     {

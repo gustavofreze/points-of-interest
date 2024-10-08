@@ -45,4 +45,4 @@ jobs:
       - name: Run tests
         env:
           XDEBUG_MODE: coverage
-        run: composer unit-test
+        run: composer tests

@@ -13,12 +13,9 @@
     },
     "mutators": {
         "@default": true,
-        "ArrayItem": false,
-        "RoundingFamily": false,
-        "UnwrapArrayMap": false,
-        "PublicVisibility": false,
-        "ArrayItemRemoval": false,
-        "IncrementInteger": false,
+        "CastInt": false,
+        "CastArray": false,
+        "CastString": false,
         "MethodCallRemoval": false
     },
     "phpUnit": {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PointsOfInterest\Domain\Models;
 
 use TinyBlocks\Collection\Collection;

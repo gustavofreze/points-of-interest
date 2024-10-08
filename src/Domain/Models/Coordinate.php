@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PointsOfInterest\Domain\Models;
 
 use PointsOfInterest\Domain\Exceptions\NegativeCoordinate;
 use TinyBlocks\Vo\ValueObject;
-use TinyBlocks\Vo\ValueObjectAdapter;
+use TinyBlocks\Vo\ValueObjectBehavior;
 
 final readonly class Coordinate implements ValueObject
 {
-    use ValueObjectAdapter;
+    use ValueObjectBehavior;
 
     public function __construct(public int $value)
     {
@@ -34,6 +36,6 @@ final readonly class Coordinate implements ValueObject
 
     public function squareRoot(): Coordinate
     {
-        return new Coordinate(value: round(sqrt($this->value)));
+        return new Coordinate(value: (int)round(sqrt($this->value)));
     }
 }
