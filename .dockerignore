@@ -1,0 +1,15 @@
+.idea
+*.xml
+*.lock
+*.dist
+.github
+.phpunit.*
+.gitignore
+
+docs
+tests
+report
+
+LICENSE
+Makefile
+README.md

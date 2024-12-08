@@ -70,10 +70,10 @@ final class SearchTest extends TestCase
         $actual = json_decode($response->getBody()->__toString(), true);
 
         $expected = PointsOfInterest::createFrom(elements: [
-            0 => ['name' => 'Pub', 'point' => ['x_coordinate' => 12, 'y_coordinate' => 8]],
-            2 => ['name' => 'Joalheria', 'point' => ['x_coordinate' => 15, 'y_coordinate' => 12]],
-            3 => ['name' => 'Lanchonete', 'point' => ['x_coordinate' => 27, 'y_coordinate' => 12]],
-            5 => ['name' => 'Supermercado', 'point' => ['x_coordinate' => 23, 'y_coordinate' => 6]]
+            ['name' => 'Pub', 'point' => ['x_coordinate' => 12, 'y_coordinate' => 8]],
+            ['name' => 'Joalheria', 'point' => ['x_coordinate' => 15, 'y_coordinate' => 12]],
+            ['name' => 'Lanchonete', 'point' => ['x_coordinate' => 27, 'y_coordinate' => 12]],
+            ['name' => 'Supermercado', 'point' => ['x_coordinate' => 23, 'y_coordinate' => 6]]
         ]);
 
         self::assertSame(HttpCode::OK->value, $response->getStatusCode());

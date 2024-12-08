@@ -14,9 +14,11 @@
     "mutators": {
         "@default": true,
         "CastInt": false,
+        "LessThan": false,
         "CastArray": false,
         "CastString": false,
-        "MethodCallRemoval": false
+        "MethodCallRemoval": false,
+        "LessThanNegotiation": false
     },
     "phpUnit": {
         "configDir": "",

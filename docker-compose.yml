@@ -3,60 +3,37 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    restart: always
+    restart: unless-stopped
     container_name: points-of-interest
     env_file:
-      - config/local.env
+      - ./config/local.env
     volumes:
-      - ./:/var/www/html
+      - ./src:/var/www/html/src
+    depends_on:
+      - points-of-interest-adm
 
   points-of-interest-adm:
     image: mysql:8.1
-    restart: always
+    restart: unless-stopped
     hostname: points-of-interest-adm
     container_name: points-of-interest-adm
     ports:
-      - "3306:3306"
+      - "3307:3306"
     environment:
       TZ: "America/Sao_Paulo"
       MYSQL_ROOT_PASSWORD: "root"
-    command: --default-authentication-plugin=mysql_native_password
+    command: --default-authentication-plugin=caching_sha2_password --host-cache-size=0 --pid-file=/var/lib/mysql/mysqld.pid
     volumes:
-      - ./db/mysql/config:/scripts/config
-      - ./db/mysql/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+      - ./config/database/mysql:/scripts/config
 
   nginx:
+    image: nginx:1-alpine
+    restart: unless-stopped
     container_name: nginx
-    image: nginx:1.27-alpine
-    restart: always
-    depends_on:
-      - points-of-interest
-    volumes:
-      - ./public:/var/www/html
-      - ./config/nginx/site.conf:/etc/nginx/conf.d/site.conf
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.nginx.entrypoints=http"
-      - "traefik.http.routers.nginx.rule=Host(`points-of-interest.localhost`)"
-
-  reverse-proxy:
-    image: traefik:3.2
-    restart: always
-    container_name: reverse-proxy
-    command:
-      - "--log.level=INFO"
-      - "--accesslog=true"
-      - "--api.insecure=true"
-      - "--api.dashboard=true"
-      - "--providers.docker=true"
-      - "--entrypoints.http.address=:80"
-      - "--providers.docker.exposedbydefault=false"
     ports:
       - "80:80"
-      - "8080:8080"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.localhost`)"
-      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./public:/var/www/html/public
+      - ./config/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - points-of-interest

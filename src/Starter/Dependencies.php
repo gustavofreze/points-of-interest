@@ -23,11 +23,11 @@ final readonly class Dependencies
                 return DriverManager::getConnection(
                     [
                         'driver'        => 'pdo_mysql',
-                        'host'          => Environment::get(variable: 'MYSQL_DATABASE_HOST')->toString(),
-                        'user'          => Environment::get(variable: 'MYSQL_DATABASE_USER')->toString(),
-                        'port'          => Environment::get(variable: 'MYSQL_DATABASE_PORT')->toInt(),
-                        'dbname'        => Environment::get(variable: 'MYSQL_DATABASE_NAME')->toString(),
-                        'password'      => Environment::get(variable: 'MYSQL_DATABASE_PASSWORD')->toString(),
+                        'host'          => Environment::get(variable: 'DATABASE_HOST')->toString(),
+                        'user'          => Environment::get(variable: 'DATABASE_USER')->toString(),
+                        'port'          => Environment::get(variable: 'DATABASE_PORT')->toInt(),
+                        'dbname'        => Environment::get(variable: 'DATABASE_NAME')->toString(),
+                        'password'      => Environment::get(variable: 'DATABASE_PASSWORD')->toString(),
                         'driverOptions' => [PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']
                     ],
                     new Configuration()
