@@ -53,11 +53,11 @@
         "squizlabs/php_codesniffer": "^3.11"
     },
     "scripts": {
+        "test": "phpunit --configuration phpunit.xml tests",
         "phpcs": "phpcs --standard=PSR12 --extensions=php ./src",
         "phpmd": "phpmd ./src text phpmd.xml --suffixes php --exclude --ignore-violations-on-exit",
         "phpstan": "phpstan analyse -c phpstan.neon.dist --quiet --no-progress",
-        "test": "phpunit --log-junit=report/coverage/junit.xml --coverage-xml=report/coverage/coverage-xml --coverage-html=report/coverage/coverage-html tests",
-        "test-mutation": "infection --only-covered --logger-html=report/coverage/mutation-report.html --coverage=report/coverage --min-msi=100 --min-covered-msi=100 --threads=4",
+        "mutation-test": "infection --only-covered --threads=max --logger-html=report/coverage/mutation-report.html --coverage=report/coverage",
         "review": [
             "@phpcs",
             "@phpmd",
@@ -65,7 +65,7 @@
         ],
         "tests": [
             "@test",
-            "@test-mutation"
+            "@mutation-test"
         ]
     }
 }

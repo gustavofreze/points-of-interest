@@ -6,7 +6,7 @@ namespace PointsOfInterest\Driver\Http\Endpoints\PointOfInterest\Search\Dtos;
 
 use PointsOfInterest\Domain\Models\PointOfInterest;
 use PointsOfInterest\Domain\Models\PointsOfInterest;
-use TinyBlocks\Collection\Internal\Operations\Transform\PreserveKeys;
+use TinyBlocks\Collection\PreserveKeys;
 
 final readonly class Response
 {
