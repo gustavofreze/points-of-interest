@@ -10,7 +10,7 @@ use PointsOfInterest\Driver\Http\Endpoints\PointOfInterest\InvalidRequest;
 use PointsOfInterest\Driver\Http\Endpoints\PointOfInterest\Register\Exceptions\PointOfInterestAlreadyExists;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
-use TinyBlocks\Http\HttpResponse;
+use TinyBlocks\Http\Response;
 
 final class RegisterExceptionHandler implements ExceptionHandler
 {
@@ -19,12 +19,12 @@ final class RegisterExceptionHandler implements ExceptionHandler
         $error = ['error' => $exception->getMessage()];
 
         return match (get_class($exception)) {
-            InvalidRequest::class,              => HttpResponse::unprocessableEntity(
-                data: ['error' => $exception->getErrors()]
+            InvalidRequest::class,              => Response::unprocessableEntity(
+                body: ['error' => $exception->getErrors()]
             ),
-            NegativeCoordinate::class,          => HttpResponse::unprocessableEntity(data: $error),
-            PointOfInterestAlreadyExists::class => HttpResponse::conflict(data: $error),
-            default                             => HttpResponse::internalServerError(data: $error)
+            NegativeCoordinate::class,          => Response::unprocessableEntity(body: $error),
+            PointOfInterestAlreadyExists::class => Response::conflict(body: $error),
+            default                             => Response::internalServerError(body: $error)
         };
     }
 }

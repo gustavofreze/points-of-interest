@@ -10,7 +10,7 @@ use PointsOfInterest\Driver\Http\Endpoints\PointOfInterest\Search\Dtos\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use TinyBlocks\Http\HttpResponse;
+use TinyBlocks\Http\Response as HttpResponse;
 
 final readonly class Search implements RequestHandlerInterface
 {
@@ -32,6 +32,6 @@ final readonly class Search implements RequestHandlerInterface
 
         $response = new Response(pointsOfInterest: $pointsOfInterest);
 
-        return HttpResponse::ok(data: $response->toArray());
+        return HttpResponse::ok(body: $response->toArray());
     }
 }

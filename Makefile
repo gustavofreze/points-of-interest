@@ -12,7 +12,7 @@ ifeq ($(ARCH),arm64)
 endif
 
 PHP_IMAGE = gustavofreze/php:8.3
-FLYWAY_IMAGE = flyway/flyway:11.0.1
+FLYWAY_IMAGE = flyway/flyway:11.1.0
 
 APP_RUN := docker run -u root --rm -it --network=host -v ${PWD}:/app -w /app ${PHP_IMAGE}
 

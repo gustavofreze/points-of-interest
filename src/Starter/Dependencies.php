@@ -10,6 +10,7 @@ use Doctrine\DBAL\DriverManager;
 use PDO;
 use PointsOfInterest\Domain\Ports\Outbound\Points;
 use PointsOfInterest\Driven\PointsOfInterest\Repository\Adapter as PointsAdapter;
+use TinyBlocks\EnvironmentVariable\EnvironmentVariable;
 
 use function DI\autowire;
 
@@ -19,20 +20,15 @@ final readonly class Dependencies
     {
         return [
             Points::class     => autowire(PointsAdapter::class),
-            Connection::class => function () {
-                return DriverManager::getConnection(
-                    [
-                        'driver'        => 'pdo_mysql',
-                        'host'          => Environment::get(variable: 'DATABASE_HOST')->toString(),
-                        'user'          => Environment::get(variable: 'DATABASE_USER')->toString(),
-                        'port'          => Environment::get(variable: 'DATABASE_PORT')->toInt(),
-                        'dbname'        => Environment::get(variable: 'DATABASE_NAME')->toString(),
-                        'password'      => Environment::get(variable: 'DATABASE_PASSWORD')->toString(),
-                        'driverOptions' => [PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']
-                    ],
-                    new Configuration()
-                );
-            }
+            Connection::class => static fn(): Connection => DriverManager::getConnection([
+                'driver'        => 'pdo_mysql',
+                'host'          => EnvironmentVariable::from(name: 'DATABASE_HOST')->toString(),
+                'user'          => EnvironmentVariable::from(name: 'DATABASE_USER')->toString(),
+                'port'          => EnvironmentVariable::from(name: 'DATABASE_PORT')->toInteger(),
+                'dbname'        => EnvironmentVariable::from(name: 'DATABASE_NAME')->toString(),
+                'password'      => EnvironmentVariable::from(name: 'DATABASE_PASSWORD')->toString(),
+                'driverOptions' => [PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']
+            ], new Configuration())
         ];
     }
 }

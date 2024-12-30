@@ -6,7 +6,7 @@ namespace PointsOfInterest\Driver\Http\Endpoints\PointOfInterest\Search\Dtos;
 
 use PointsOfInterest\Domain\Models\PointOfInterest;
 use PointsOfInterest\Domain\Models\PointsOfInterest;
-use TinyBlocks\Collection\PreserveKeys;
+use TinyBlocks\Mapper\KeyPreservation;
 
 final readonly class Response
 {
@@ -24,6 +24,6 @@ final readonly class Response
                     'y_coordinate' => $pointOfInterest->yCoordinate->value
                 ]
             ])
-            ->toArray(preserveKeys: PreserveKeys::DISCARD);
+            ->toArray(keyPreservation: KeyPreservation::DISCARD);
     }
 }
