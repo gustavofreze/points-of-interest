@@ -13,7 +13,6 @@ final class PointOfInterestAlreadyExists extends RuntimeException
     public function __construct(PointOfInterest $pointOfInterest)
     {
         $template = 'A point of interest with name <%s>, x coordinate <%s> and y coordinate <%s> already exists.';
-       
         parent::__construct(
             message: sprintf(
                 $template,
