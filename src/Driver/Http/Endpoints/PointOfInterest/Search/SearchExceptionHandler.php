@@ -8,7 +8,7 @@ use PointsOfInterest\Driver\Http\Endpoints\ExceptionHandler;
 use PointsOfInterest\Driver\Http\Endpoints\PointOfInterest\InvalidRequest;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
-use TinyBlocks\Http\HttpResponse;
+use TinyBlocks\Http\Response as HttpResponse;
 
 final class SearchExceptionHandler implements ExceptionHandler
 {
@@ -17,8 +17,8 @@ final class SearchExceptionHandler implements ExceptionHandler
         $error = ['error' => $exception->getMessage()];
 
         return match (get_class($exception)) {
-            InvalidRequest::class => HttpResponse::unprocessableEntity(data: ['error' => $exception->getErrors()]),
-            default               => HttpResponse::internalServerError(data: $error)
+            InvalidRequest::class => HttpResponse::unprocessableEntity(body: ['error' => $exception->getErrors()]),
+            default               => HttpResponse::internalServerError(body: $error)
         };
     }
 }

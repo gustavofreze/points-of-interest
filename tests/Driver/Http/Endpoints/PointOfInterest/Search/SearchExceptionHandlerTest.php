@@ -13,7 +13,7 @@ use PointsOfInterest\Driver\Http\Middlewares\ErrorHandling;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use TinyBlocks\Http\HttpCode;
+use TinyBlocks\Http\Code;
 
 final class SearchExceptionHandlerTest extends TestCase
 {
@@ -40,7 +40,7 @@ final class SearchExceptionHandlerTest extends TestCase
         $actual = $this->middleware->process(request: $request, handler: $this->endpoint);
 
         /** @Then an error response indicating the missing 'distance' parameter should be returned */
-        self::assertSame(HttpCode::UNPROCESSABLE_ENTITY->value, $actual->getStatusCode());
+        self::assertSame(Code::UNPROCESSABLE_ENTITY->value, $actual->getStatusCode());
         self::assertSame('{"error":{"distance":"distance must be present"}}', $actual->getBody()->__toString());
     }
 
@@ -64,7 +64,7 @@ final class SearchExceptionHandlerTest extends TestCase
         $actual = $this->middleware->process(request: $request, handler: $endpoint);
 
         /** @Then I should receive an error response indicating that an unknown error occurred */
-        self::assertSame(HttpCode::INTERNAL_SERVER_ERROR->value, $actual->getStatusCode());
+        self::assertSame(Code::INTERNAL_SERVER_ERROR->value, $actual->getStatusCode());
         self::assertSame('{"error":"Unknown error occurred."}', $actual->getBody()->__toString());
     }
 }

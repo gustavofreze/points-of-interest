@@ -11,7 +11,7 @@ use PointsOfInterest\Driver\Http\Endpoints\PointOfInterest\Register\Exceptions\P
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use TinyBlocks\Http\HttpResponse;
+use TinyBlocks\Http\Response as HttpResponse;
 
 final readonly class Register implements RequestHandlerInterface
 {
@@ -34,6 +34,6 @@ final readonly class Register implements RequestHandlerInterface
         $this->points->save(pointOfInterest: $pointOfInterest);
         $response = new Response(pointOfInterest: $pointOfInterest);
 
-        return HttpResponse::created(data: $response->toArray());
+        return HttpResponse::created(body: $response->toArray());
     }
 }
