@@ -14,7 +14,7 @@ use PointsOfInterest\Driver\Http\Middlewares\ErrorHandling;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use TinyBlocks\Http\HttpCode;
+use TinyBlocks\Http\Code;
 
 final class RegisterExceptionHandlerTest extends TestCase
 {
@@ -43,7 +43,7 @@ final class RegisterExceptionHandlerTest extends TestCase
         $actual = $this->middleware->process(request: $request, handler: $this->endpoint);
 
         /** @Then I should receive an error response indicating the 'name' field is missing */
-        self::assertSame(HttpCode::UNPROCESSABLE_ENTITY->value, $actual->getStatusCode());
+        self::assertSame(Code::UNPROCESSABLE_ENTITY->value, $actual->getStatusCode());
         self::assertSame('{"error":{"name":"name must be present"}}', $actual->getBody()->__toString());
     }
 
@@ -59,7 +59,7 @@ final class RegisterExceptionHandlerTest extends TestCase
         $actual = $this->middleware->process(request: $request, handler: $this->endpoint);
 
         /** @Then I should receive an error response indicating that the x-coordinate cannot be negative */
-        self::assertSame(HttpCode::UNPROCESSABLE_ENTITY->value, $actual->getStatusCode());
+        self::assertSame(Code::UNPROCESSABLE_ENTITY->value, $actual->getStatusCode());
         self::assertSame('{"error":"Coordinate value <-1000> cannot be negative."}', $actual->getBody()->__toString());
     }
 
@@ -87,7 +87,7 @@ final class RegisterExceptionHandlerTest extends TestCase
                 $payload['point']['y_coordinate']
             )
         ]);
-        self::assertSame(HttpCode::CONFLICT->value, $actual->getStatusCode());
+        self::assertSame(Code::CONFLICT->value, $actual->getStatusCode());
         self::assertSame($expected, $actual->getBody()->__toString());
     }
 
@@ -111,7 +111,7 @@ final class RegisterExceptionHandlerTest extends TestCase
         $actual = $this->middleware->process(request: $request, handler: $endpoint);
 
         /** @Then I should receive an error response indicating that an unknown error occurred */
-        self::assertSame(HttpCode::INTERNAL_SERVER_ERROR->value, $actual->getStatusCode());
+        self::assertSame(Code::INTERNAL_SERVER_ERROR->value, $actual->getStatusCode());
         self::assertSame('{"error":"Unknown error occurred."}', $actual->getBody()->__toString());
     }
 }

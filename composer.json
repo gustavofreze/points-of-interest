@@ -39,10 +39,11 @@
         "doctrine/dbal": "^3.9",
         "respect/validation": "^2.3",
         "php-di/slim-bridge": "^3.4",
-        "tiny-blocks/http": "^3",
+        "tiny-blocks/http": "^4",
+        "tiny-blocks/mapper": "^1",
         "tiny-blocks/collection": "^1",
-        "tiny-blocks/serializer": "^3",
         "tiny-blocks/value-object": "^3",
+        "tiny-blocks/environment-variable": "^1",
         "ext-pdo": "*"
     },
     "require-dev": {

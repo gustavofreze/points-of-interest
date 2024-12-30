@@ -11,7 +11,7 @@ use PointsOfInterest\Domain\Models\PointsOfInterest;
 use PointsOfInterest\Domain\Ports\Outbound\Points;
 use PointsOfInterest\Driver\Http\Endpoints\PointOfInterest\Mocks\PointsMock;
 use PointsOfInterest\Driver\Http\Endpoints\PointOfInterest\Mocks\RequestHttpMock;
-use TinyBlocks\Http\HttpCode;
+use TinyBlocks\Http\Code;
 
 final class SearchTest extends TestCase
 {
@@ -42,7 +42,7 @@ final class SearchTest extends TestCase
         $response = $this->search->handle(request: RequestHttpMock::getFrom(path: '/pois'));
 
         /** @Then the response should contain all registered points of interest */
-        self::assertSame(HttpCode::OK->value, $response->getStatusCode());
+        self::assertSame(Code::OK->value, $response->getStatusCode());
         self::assertCount(7, json_decode($response->getBody()->__toString(), true));
     }
 
@@ -76,7 +76,7 @@ final class SearchTest extends TestCase
             ['name' => 'Supermercado', 'point' => ['x_coordinate' => 23, 'y_coordinate' => 6]]
         ]);
 
-        self::assertSame(HttpCode::OK->value, $response->getStatusCode());
+        self::assertSame(Code::OK->value, $response->getStatusCode());
         self::assertSame($expected->toArray(), $actual);
         self::assertCount(4, $actual);
     }

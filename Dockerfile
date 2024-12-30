@@ -6,7 +6,7 @@ LABEL author="Gustavo Freze" \
       org.label-schema.vcs-url="https://github.com/gustavofreze/points-of-interest/blob/main/Dockerfile" \
       org.label-schema.schema-version="1.0"
 
-ARG FLYWAY_VERSION=11.0.1
+ARG FLYWAY_VERSION=11.1.0
 
 RUN apk --no-cache add openjdk21-jre \
     && mkdir -p /opt/flyway \

@@ -8,7 +8,7 @@ namespace PointsOfInterest\Driver\Http\Endpoints\PointOfInterest\Register;
 use PHPUnit\Framework\TestCase;
 use PointsOfInterest\Driver\Http\Endpoints\PointOfInterest\Mocks\PointsMock;
 use PointsOfInterest\Driver\Http\Endpoints\PointOfInterest\Mocks\RequestHttpMock;
-use TinyBlocks\Http\HttpCode;
+use TinyBlocks\Http\Code;
 
 final class RegisterTest extends TestCase
 {
@@ -31,7 +31,7 @@ final class RegisterTest extends TestCase
         $response = $this->register->handle(request: $request);
 
         /** @Then the point should be registered successfully with a 201 Created response */
-        self::assertSame(HttpCode::CREATED->value, $response->getStatusCode());
+        self::assertSame(Code::CREATED->value, $response->getStatusCode());
         self::assertSame($payload, json_decode($response->getBody()->__toString(), true));
     }
 }

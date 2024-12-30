@@ -6,7 +6,7 @@ namespace PointsOfInterest\Driver\Http\Endpoints\PointOfInterest\Register\Except
 
 use PointsOfInterest\Domain\Models\PointOfInterest;
 use RuntimeException;
-use TinyBlocks\Http\HttpCode;
+use TinyBlocks\Http\Code;
 
 final class PointOfInterestAlreadyExists extends RuntimeException
 {
@@ -20,7 +20,7 @@ final class PointOfInterestAlreadyExists extends RuntimeException
                 $pointOfInterest->xCoordinate->value,
                 $pointOfInterest->yCoordinate->value
             ),
-            code: HttpCode::CONFLICT->value
+            code: Code::CONFLICT->value
         );
     }
 }
