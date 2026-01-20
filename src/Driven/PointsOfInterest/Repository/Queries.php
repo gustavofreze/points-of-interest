@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PointsOfInterest\Driven\PointsOfInterest\Repository;
 
-final class Queries
+final readonly class Queries
 {
     public const string INSERT = '
         INSERT INTO points_interest (name, x_coordinate, y_coordinate)

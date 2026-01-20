@@ -36,6 +36,6 @@ final readonly class PointOfInterest implements ValueObject
             ->add(addend: $yValue)
             ->squareRoot();
 
-        return (new Distance(value: $distance->value))->isLessThanOrEqual(other: $maximumDistance);
+        return new Distance(value: $distance->value)->isLessThanOrEqual(other: $maximumDistance);
     }
 }

@@ -36,7 +36,7 @@ final class RequestHttpMock
             $path,
             $query
         );
-        $stream = (new StreamFactory())->createStream($body);
+        $stream = new StreamFactory()->createStream($body);
         $headers = new Headers(['HTTP_ACCEPT' => 'application/json']);
 
         return new Request(
