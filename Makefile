@@ -1,9 +1,4 @@
-ifeq ($(OS),Windows_NT)
-    PWD := $(shell cd)
-else
-    PWD := $(shell pwd -L)
-endif
-
+PWD := $(CURDIR)
 ARCH := $(shell uname -m)
 PLATFORM :=
 
@@ -11,8 +6,8 @@ ifeq ($(ARCH),arm64)
     PLATFORM := --platform=linux/amd64
 endif
 
-PHP_IMAGE = gustavofreze/php:8.3
-FLYWAY_IMAGE = flyway/flyway:11.1.0
+PHP_IMAGE = gustavofreze/php:8.5-alpine
+FLYWAY_IMAGE = flyway/flyway:11.20.2
 
 APP_RUN := docker run -u root --rm -it --network=host -v ${PWD}:/app -w /app ${PHP_IMAGE}
 
@@ -20,32 +15,40 @@ FLYWAY_RUN = docker run ${PLATFORM} --rm -v ${PWD}/config/database/mysql/migrati
 MIGRATE_DB = ${FLYWAY_RUN} -locations=filesystem:/flyway/sql -schemas=poi_adm -connectRetries=15
 
 .DEFAULT_GOAL := help
-.PHONY: start stop configure test review show-reports migrate-database clean-database help
 
+.PHONY: start
 start: ## Start application containers
 	@docker compose up -d --build
 
+.PHONY: stop
 stop: ## Stop application containers
 	@docker compose down
 
+.PHONY: configure
 configure: ## Configure development environment
 	@${APP_RUN} composer update --optimize-autoloader
 
+.PHONY: test
 test: ## Run all tests with coverage
 	@${APP_RUN} composer run tests
 
+.PHONY: review
 review: ## Run static code analysis
 	@${APP_RUN} composer review
 
+.PHONY: show-reports
 show-reports: ## Open static analysis reports (e.g., coverage, lints) in the browser
 	@sensible-browser report/coverage/coverage-html/index.html report/coverage/mutation-report.html
 
+.PHONY: migrate-database
 migrate-database: ## Run database migrations
 	@${MIGRATE_DB} migrate
 
+.PHONY: clean-database
 clean-database: ## Clean database
 	@${MIGRATE_DB} clean
 
+.PHONY: help
 help: ## Display this help message
 	@echo "Usage: make [target]"
 	@echo ""

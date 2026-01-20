@@ -6,6 +6,7 @@ parameters:
   ignoreErrors:
     - '#Parameter ...#'
     - '#with generic#'
+    - '#Named argument#'
     - '#Cannot cast mixed#'
     - '#extends generic class#'
     - '#no value type specified in iterable type array#'

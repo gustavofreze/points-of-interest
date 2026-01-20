@@ -69,7 +69,7 @@ final class RegisterExceptionHandlerTest extends TestCase
         $payload = ['name' => 'xpto', 'point' => ['x_coordinate' => rand(1, 10000), 'y_coordinate' => rand(1, 10000)]];
 
         /** @And this point of interest has already been registered previously */
-        $this->points->save(pointOfInterest: (new Request(payload: $payload))->toPointOfInterest());
+        $this->points->save(pointOfInterest: new Request(payload: $payload)->toPointOfInterest());
 
         /** @And I send a registration request with the same point of interest details */
         $request = RequestHttpMock::postFrom(path: '/pois', payload: json_encode($payload));
