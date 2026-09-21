@@ -1,6 +1,5 @@
-# Default build-context filter, used by Dockerfile.dev. Dockerfile.prod has its own
-# override (Dockerfile.prod.dockerignore) that additionally excludes vendor/, the
-# development image ships the host-installed vendor/ on purpose.
+# Build-context filter for Dockerfile.prod. Same exclusions as .dockerignore plus
+# vendor/, the production builder stage installs dependencies from the lock file.
 .git
 .github
 .claude
@@ -17,6 +16,7 @@ database/
 docs/
 reports/
 tests/
+vendor/
 *.md
 openapi.yaml
 .phpunit.cache

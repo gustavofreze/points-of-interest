@@ -1,90 +1,61 @@
-name: CI
-
+name: CI (Points of interest)
 on:
   pull_request:
+    branches: [ "main" ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
 
-env:
-  PHP_VERSION: '8.5'
-
 jobs:
-  build:
-    name: Build
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
-
+    timeout-minutes: 10
+    permissions:
+      contents: read
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Configure PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ env.PHP_VERSION }}
-          extensions: bcmath
-          tools: composer:2
-
-      - name: Validate composer.json
-        run: composer validate --no-interaction
+      - name: Checkout repository
+        uses: actions/checkout@v7
 
       - name: Install dependencies
-        run: composer install --no-progress --optimize-autoloader --prefer-dist --no-interaction
+        run: make configure
 
-      - name: Upload vendor and composer.lock as artifact
-        uses: actions/upload-artifact@v6
-        with:
-          name: vendor-artifact
-          path: |
-            vendor
-            composer.lock
+      - name: Run lint
+        run: make review
 
-  auto-review:
-    name: Auto review
+  test:
+    name: Test
+    needs: lint
     runs-on: ubuntu-latest
-    needs: build
-
+    timeout-minutes: 15
+    permissions:
+      contents: read
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - name: Checkout repository
+        uses: actions/checkout@v7
 
-      - name: Configure PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ env.PHP_VERSION }}
-          extensions: bcmath
-          tools: composer:2
-
-      - name: Download vendor artifact from build
-        uses: actions/download-artifact@v7
-        with:
-          name: vendor-artifact
-          path: .
-
-      - name: Run review
-        run: composer review
-
-  tests:
-    name: Tests
-    runs-on: ubuntu-latest
-    needs: auto-review
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Configure PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ env.PHP_VERSION }}
-          extensions: bcmath
-          tools: composer:2
-
-      - name: Download vendor artifact from build
-        uses: actions/download-artifact@v7
-        with:
-          name: vendor-artifact
-          path: .
+      - name: Install dependencies
+        run: make configure
 
       - name: Run tests
-        run: composer tests
+        run: make tests
+
+  build:
+    name: Build
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    env:
+      DOCKER_BUILDKIT: 1
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Build the production image
+        run: docker build --file Dockerfile.prod --tag points-of-interest:ci .
