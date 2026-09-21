@@ -1,0 +1,9 @@
+# Terraform working files. The real terraform.tfvars is local-only, CI provides values
+# through TF_VAR_* environment variables and -backend-config flags.
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+.terraform.lock.hcl
+tfplan.bin

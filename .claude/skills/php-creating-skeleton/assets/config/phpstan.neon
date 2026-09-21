@@ -1,0 +1,10 @@
+# Level 5 adds argument-type checks on top of level 4's dead-code checks. Level 6 is the ceiling
+# that would demand iterable value-type docblocks (array<K, V>) on concrete classes, which the
+# php-code-style PHPDoc rule prohibits (PHPDoc lives on interfaces only), so raising past 5
+# requires revisiting that rule first.
+parameters:
+    level: 5
+    paths:
+        - src
+        - tests
+    tmpDir: reports/phpstan

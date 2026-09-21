@@ -1,0 +1,115 @@
+# Standard service stack: database, migrations, PHP-FPM app, web sidecar. App-specific
+# services (queues, workers, CDC, cloud mocks) and their assets follow the layout rule.
+# The migrate and web images come from a shared base image namespace. Without one, each is the upstream
+# official image, pinned to its major.minor tag.
+name: <service-name>
+
+services:
+  <service-name>-adm:
+    image: mysql:8.4
+    restart: unless-stopped
+    hostname: <service-name>-adm
+    container_name: <service-name>-adm
+    cpus: 1
+    mem_limit: 1g
+    ports:
+      - "<database-host-port>:3306"
+    environment:
+      MYSQL_DATABASE: ${DATABASE_NAME}
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_INITDB_SKIP_TZINFO: "yes"
+      <SERVICE_NAME>_APP_USER: ${DATABASE_USER}
+      <SERVICE_NAME>_APP_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - <service-name>-adm-data:/var/lib/mysql
+      - ./docker/mysql/initdb.d:/docker-entrypoint-initdb.d:ro
+    tmpfs:
+      - /run/mysqld:uid=999,gid=999,mode=0750
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD}" ]
+      timeout: 3s
+      retries: 30
+      interval: 5s
+    networks:
+      - <local-network>
+
+  <service-name>-migrate:
+    image: <base-images>/flyway:12.9-runtime-1.0.0
+    hostname: <service-name>-migrate
+    container_name: <service-name>-migrate
+    cpus: 0.5
+    mem_limit: 256m
+    environment:
+      DATABASE_HOST: <service-name>-adm
+      DATABASE_PORT: "3306"
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USER: root
+      DATABASE_PASSWORD: root
+      DATABASE_ALLOW_REPAIR: ${DATABASE_ALLOW_REPAIR:-true}
+    volumes:
+      - ./database/migrations:/flyway/migrations:ro
+    depends_on:
+      <service-name>-adm:
+        condition: service_healthy
+    networks:
+      - <local-network>
+
+  <service-name>:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    hostname: <service-name>
+    container_name: <service-name>
+    cpus: 1
+    mem_limit: 512m
+    stop_grace_period: 30s
+    env_file:
+      - path: .env.local
+        required: true
+    volumes:
+      - ./src:/var/www/html/src
+    depends_on:
+      <service-name>-migrate:
+        condition: service_completed_successfully
+    networks:
+      - <local-network>
+
+  <service-name>-web:
+    image: <base-images>/nginx:1.29-development-1.0.0
+    restart: unless-stopped
+    container_name: <service-name>-web
+    cpus: 0.5
+    mem_limit: 128m
+    environment:
+      PHP_UPSTREAM: <service-name>:9000
+    # These labels apply only while a local proxy exists. The entrypoint name and the TLS flag are facts
+    # about that proxy, so match them to its configuration, and with no local domain of its own the host
+    # rule falls back to <service-name>.localhost. Without a local proxy, drop the whole block and
+    # publish the port instead (ports: - "8080:8080").
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.<service-name>.rule=Host(`<service-name>.<local-domain>`)
+      - traefik.http.routers.<service-name>.entrypoints=websecure
+      - traefik.http.routers.<service-name>.tls=true
+      - traefik.http.services.<service-name>.loadbalancer.server.port=8080
+    volumes:
+      - ./public:/var/www/html/public:ro
+    depends_on:
+      <service-name>:
+        condition: service_healthy
+    networks:
+      <local-network>:
+        aliases:
+          - <service-name>-web
+
+volumes:
+  <service-name>-adm-data:
+
+# The shared network is declared external, so it must already exist or the up aborts outright. Without a
+# shared network, drop this block and every networks: entry above, and compose creates its own project
+# network for the stack.
+networks:
+  <local-network>:
+    name: <local-network>
+    external: true

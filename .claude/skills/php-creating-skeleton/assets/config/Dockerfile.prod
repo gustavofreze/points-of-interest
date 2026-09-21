@@ -1,0 +1,18 @@
+# syntax=docker/dockerfile:1
+FROM <base-images>/php:<runtime-minor>-builder-1.0.0 AS builder
+
+COPY composer.json composer.lock ./
+
+RUN --mount=type=secret,id=composer_auth,env=COMPOSER_AUTH \
+    composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+
+COPY ./ ./
+
+RUN composer dump-autoload --optimize --classmap-authoritative
+
+FROM <base-images>/php:<runtime-minor>-runtime-1.0.0
+
+LABEL org.opencontainers.image.title="<vendor>/<service-name>"
+LABEL org.opencontainers.image.environment="production"
+
+COPY --from=builder --chown=www-data:www-data /app /var/www/html

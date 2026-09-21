@@ -1,39 +1,89 @@
+name: points-of-interest
+
 services:
   points-of-interest:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
+    cpus: 1.0
     restart: unless-stopped
+    hostname: points-of-interest
+    mem_limit: 512m
     container_name: points-of-interest
+    stop_grace_period: 30s
     env_file:
-      - ./config/local.env
+      - path: .env.local
+        required: true
     volumes:
       - ./src:/var/www/html/src
     depends_on:
-      - points-of-interest-adm
+      points-of-interest-migrate:
+        condition: service_completed_successfully
 
   points-of-interest-adm:
-    image: mysql:8.1
+    image: mysql:8.4
+    cpus: 1.0
     restart: unless-stopped
     hostname: points-of-interest-adm
+    mem_limit: 1g
     container_name: points-of-interest-adm
-    ports:
-      - "3307:3306"
     environment:
-      TZ: "America/Sao_Paulo"
-      MYSQL_ROOT_PASSWORD: "root"
-    command: --default-authentication-plugin=caching_sha2_password --host-cache-size=0 --pid-file=/var/lib/mysql/mysqld.pid
-    volumes:
-      - ./config/database/mysql:/scripts/config
-
-  nginx:
-    image: nginx:1-alpine
-    restart: unless-stopped
-    container_name: nginx
+      MYSQL_DATABASE: "${DATABASE_NAME}"
+      MYSQL_ROOT_PASSWORD: "${DATABASE_PASSWORD}"
+      MYSQL_INITDB_SKIP_TZINFO: "yes"
+    command:
+      - --host-cache-size=0
+      - --pid-file=/var/lib/mysql/mysqld.pid
     ports:
-      - "80:80"
+      - "3506:3306"
     volumes:
-      - ./public:/var/www/html/public
-      - ./config/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - points-of-interest-adm-data:/var/lib/mysql
+    tmpfs:
+      - /run/mysqld:uid=999,gid=999,mode=0750
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  points-of-interest-migrate:
+    image: flyway/flyway:13.7
+    cpus: 0.5
+    hostname: points-of-interest-migrate
+    mem_limit: 256m
+    container_name: points-of-interest-migrate
+    env_file:
+      - path: .env.local
+        required: true
+    command: ["-connectRetries=60", "migrate"]
+    volumes:
+      - ./database/migrations:/flyway/sql:ro
     depends_on:
-      - points-of-interest
+      points-of-interest-adm:
+        condition: service_healthy
+
+  points-of-interest-web:
+    image: nginx:1.31-alpine
+    cpus: 0.5
+    restart: unless-stopped
+    hostname: points-of-interest-web
+    mem_limit: 128m
+    container_name: points-of-interest-web
+    ports:
+      - "8290:80"
+    volumes:
+      - ./public:/var/www/html/public:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    depends_on:
+      points-of-interest:
+        condition: service_healthy
+
+volumes:
+  points-of-interest-adm-data:

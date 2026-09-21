@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd"
+         colors="true"
+         bootstrap="tests/bootstrap.php"
+         failOnRisky="true"
+         failOnWarning="true"
+         executionOrder="random"
+         cacheDirectory=".phpunit.cache"
+         beStrictAboutOutputDuringTests="true">
+
+    <source>
+        <include>
+            <directory>src</directory>
+        </include>
+        <exclude>
+            <file>src/Routes.php</file>
+            <file>src/AppSettings.php</file>
+            <file>src/Dependencies.php</file>
+            <file>src/DatabaseSettings.php</file>
+            <!-- Provider-, gateway-, and webhook-specific Settings files. -->
+        </exclude>
+    </source>
+
+    <testsuites>
+        <testsuite name="unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="integration">
+            <directory>tests/Integration</directory>
+        </testsuite>
+    </testsuites>
+
+    <coverage>
+        <report>
+            <xml outputDirectory="reports/coverage/coverage-xml"/>
+            <html outputDirectory="reports/coverage/coverage-html"/>
+            <text outputFile="reports/coverage/coverage.txt"/>
+            <clover outputFile="reports/coverage/coverage-clover.xml"/>
+        </report>
+    </coverage>
+
+    <logging>
+        <junit outputFile="reports/coverage/junit.xml"/>
+    </logging>
+
+    <php>
+        <env name="APP_NAME" value="<service-name>"/>
+
+        <env name="DATABASE_HOST" value="<service-name>-adm-test"/>
+        <env name="DATABASE_PORT" value="3306"/>
+        <env name="DATABASE_NAME" value="<service_name>_adm_test"/>
+        <env name="DATABASE_USER" value="root"/>
+        <env name="DATABASE_PASSWORD" value="root"/>
+
+        <!-- Service-specific external endpoint URLs, mock secrets, sandbox API keys. -->
+    </php>
+
+</phpunit>

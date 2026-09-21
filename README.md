@@ -1,186 +1,169 @@
-# Points Of Interest (POIs)
+# Points Of Interest
 
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 * [Overview](#overview)
-* [Endpoints](#endpoints)
-* [Instalação](#installation)
-    - [Repositório](#repository)
-    - [Configuração](#configure)
-* [FAQ](#faq)
-
-<div id="overview"></div> 
+* [Installation](#installation)
+* [Environment setup](#environment-setup)
 
 ## Overview
 
-Implementação do desafio
-[Pontos de Interesse por GPS](https://github.com/backend-br/desafios/blob/master/points-of-interest/PROBLEM.md),
-do repositório backend-br.
+Implementation of
+the [Pontos de Interesse por GPS](https://github.com/backend-br/desafios/blob/master/points-of-interest/PROBLEM.md)
+challenge from the backend-br repository. Company XY Inc. builds GPS receivers and needs a platform that guides people
+to points of interest. This service registers a point of interest at the coordinates a receiver reported for it,
+publishes the registration through a transactional outbox, and lists the points back, either in full or narrowed to
+those within a maximum distance of a reference point.
 
-### Pontos de Interesse por GPS
+A point carries a name and the coordinates it sits at on the plane, both measured in metres from the origin and never
+negative. A proximity search compares the straight line between the point and the reference as less than or equal to
+the given distance, and the comparison runs in the database over integer arithmetic, so no point is ever loaded into
+memory to be discarded. The points the service ships with are seeded by the migrations:
 
-Seu desafio será implementar um serviço para a empresa XY Inc., especializada na produção de excelentes receptores
-GPS (Global Positioning System).
-A diretoria está empenhada em lançar um dispositivo inovador que promete auxiliar pessoas na localização de pontos de
-interesse (POIs), e precisa muito de sua ajuda.
-Você foi contratado para desenvolver a plataforma que fornecerá toda a inteligência ao dispositivo. Esta plataforma deve
-ser baseada em serviços REST, para flexibilizar a integração.
+| Point of interest | X coordinate | Y coordinate |
+|:------------------|-------------:|-------------:|
+| Lanchonete        |           27 |           12 |
+| Posto             |           31 |           18 |
+| Joalheria         |           15 |           12 |
+| Floricultura      |           19 |           21 |
+| Pub               |           12 |            8 |
+| Supermercado      |           23 |            6 |
+| Churrascaria      |           28 |            2 |
 
-#### Exemplo
+Given the reference point (x=20, y=10) and a maximum distance of 10 metres, the service answers Lanchonete, Joalheria,
+Pub, and Supermercado.
 
-Considere a seguinte base de dados de POIs:
+The HTTP contract is published in `openapi.yaml` at the repository root and detailed in the documentation pages linked
+below. To exercise it, import the [Postman collection](docs/postman/points-of-interest.postman_collection.json). It
+covers every operation, and running it top to bottom against a local stack registers a point and reads it back. It
+carries its own `baseUrl`, so no environment import is needed to point it at `http://points-of-interest.localhost:8290`.
 
-- 'Lanchonete' (x=27, y=12)
-- 'Posto' (x=31, y=18)
-- 'Joalheria' (x=15, y=12)
-- 'Floricultura' (x=19, y=21)
-- 'Pub' (x=12, y=8)
-- 'Supermercado' (x=23, y=6)
-- 'Churrascaria' (x=28, y=2)
+### Use cases
 
-Dado o ponto de referência (x=20, y=10) indicado pelo receptor GPS, e uma distância máxima de 10 metros, o serviço deve
-retornar os seguintes POIs:
+- [Register a point of interest](docs/USE_CASES.md#register-a-point-of-interest)
 
-- Lanchonete
-- Joalheria
-- Pub
-- Supermercado
+### Queries
 
-#### Regras
+- [Find points of interest](docs/QUERIES.md#find-points-of-interest)
 
-- Cadastrar pontos de interesse, com 03 atributos: nome do POI, coordenada X (inteiro não negativo)
-  e coordenada Y (inteiro não negativo).
-- Os POIs devem ser armazenados em uma base de dados.
-- Listar todos os POIs cadastrados.
-- Listar os POIs por proximidade. Este serviço receberá uma coordenada X e uma coordenada Y, especificando um ponto de
-  referência, bem como uma distância máxima (d-max) em metros. O serviço deverá retornar todos os POIs da base de dados
-  que estejam a uma distância menor ou igual a d-max a partir do ponto de referência.
+### Health
 
-<div id='endpoints'></div> 
+- [Liveness check](docs/HEALTH.md#liveness-check)
+- [Readiness check](docs/HEALTH.md#readiness-check)
 
-## Endpoints
+## Installation
 
-URLs de acesso:
-
-| Ambiente | DNS                                 | 
-|:---------|:------------------------------------|
-| `Local`  | http://points-of-interest.localhost |
-
-### Cadastrar POI
-
-Cadastrar um ponto de interesse.
-
-**[POST]** `{{host}}/pois`
-
-**Request**
-
-| Parâmetro            |  Tipo  | Descrição                           | Obrigatório |
-|:---------------------|:------:|:------------------------------------|:-----------:|
-| `name`               | String | Nome do ponto de interesse.         |     Sim     |    
-| `point.x_coordinate` |  int   | Coordenada X do ponto de interesse. |     Sim     |             
-| `point.y_coordinate` |  int   | Coordenada Y do ponto de interesse. |     Sim     |
-
-```json
-{
-    "name": "Pub",
-    "point": {
-        "x_coordinate": 12,
-        "y_coordinate": 8
-    }
-}
-```
-
-**Response**
-
-```
-HTTP/1.1 201 Created
-Content-Type: application/json
-```
-
-```json
-{
-    "name": "Pub",
-    "point": {
-        "x_coordinate": 12,
-        "y_coordinate": 8
-    }
-}
-```
-
-### Listar POIs
-
-Listar todos os pontos de interesse cadastrados, ou, utilizando os filtros, apenas os pontos de interesse cadastrados,
-que estejam a uma distância menor ou igual a `distance` a partir do ponto de referência (`x_coordinate`
-e `y_coordinate`).
-
-**[GET]** `{{host}}/pois?x_coordinate=20&y_coordinate=10&distance=10`
-
-**Request**
-
-| Parâmetro      | Tipo | Descrição                           | Obrigatório |
-|:---------------|:----:|:------------------------------------|:-----------:|
-| `distance`     | int  | Distância máxima em metros.         |     Não     |             
-| `x_coordinate` | int  | Coordenada X do ponto de interesse. |     Não     |             
-| `y_coordinate` | int  | Coordenada Y do ponto de interesse. |     Não     |
-
-**Response**
-
-```
-HTTP/1.1 200 OK
-Content-Type: application/json
-```
-
-```json
-[
-    {
-        "name": "Pub",
-        "point": {
-            "x_coordinate": 12,
-            "y_coordinate": 8
-        }
-    }
-]
-```
-
-<div id='installation'></div> 
-
-## Instalação
-
-<div id='repository'></div> 
-
-### Repositório
-
-Para clonar o repositório usando a linha de comando, execute:
+To clone the repository, run:
 
 ```bash
 git clone https://github.com/gustavofreze/points-of-interest.git
 ```
 
-<div id='configure'></div> 
-
-### Configuração
-
-Para instalar dependências do projeto localmente, execute:
+Install dependencies:
 
 ```bash
 make configure
 ```
 
-Para iniciar os contêineres do projeto, execute:
+Start the application containers:
 
 ```bash
 make start
 ```
 
-> Você pode verificar outros comandos disponíveis executando `make help`.
+Stop the application containers and drop the data volume:
 
-<div id='faq'></div> 
+```bash
+make stop
+```
 
-## FAQ
+Run all tests with coverage and mutation testing:
 
-- **Existe algum trade-off em modelar a lógica de obter os pontos de interesse, com base no ponto de referência, nos
-  modelos?**
+```bash
+make tests
+```
 
-  Sim, para uma aplicação de produção, em que o banco de dados pode crescer exponencialmente. Em uma situação em que
-  você tem um número enorme de pontos para processar, uma limitação de memória seria inerente. Então, faria sentido,
-  essa lógica estar no banco de dados.
+Run a single test file:
+
+```bash
+make test-file FILE=PointOfInterestTest
+```
+
+Run static code analysis:
+
+```bash
+make review
+```
+
+Fix what the static analysis can fix on its own:
+
+```bash
+make fix-review
+```
+
+Open the coverage and mutation reports in the browser:
+
+```bash
+make show-reports
+```
+
+Show outdated direct dependencies:
+
+```bash
+make show-outdated
+```
+
+Remove dependencies and generated artifacts:
+
+```bash
+make clean
+```
+
+> You can check other available commands by running `make help`.
+
+## Environment setup
+
+### Access URLs
+
+| Environment | DNS                                      |
+|:------------|:-----------------------------------------|
+| `Local`     | http://points-of-interest.localhost:8290 |
+
+### Database
+
+| Environment | URL                         | Port |
+|:------------|:----------------------------|:----:|
+| `Local`     | jdbc:mysql://localhost:3506 | 3506 |
+
+### Environment variables
+
+Every variable the application and its migration run read. This is a proof of concept, so `.env.local` is committed at
+the repository root and the `Development value` column below is the literal content of that file. Every value in it is a
+local-only default and never a real credential. A deployed environment supplies its own values through the container
+environment instead. The `Makefile` hands the file to Docker Compose with `--env-file`, and both the
+`points-of-interest` and the `points-of-interest-migrate` services load it through `env_file`.
+
+| Variable                           | Description                                                           | Development value                                                                                                                     |
+|:-----------------------------------|:----------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------------|
+| `DEBUG`                            | Whether error responses carry the exception details                   | `false`                                                                                                                               |
+| `SOURCE`                           | Address the root path redirects to                                    | `https://github.com/gustavofreze/points-of-interest`                                                                                  |
+| `APP_NAME`                         | Component name every log entry carries                                | `points-of-interest`                                                                                                                  |
+| `DATABASE_HOST`                    | Database host (docker service name)                                   | `points-of-interest-adm`                                                                                                              |
+| `DATABASE_PORT`                    | Database port inside the docker network                               | `3306`                                                                                                                                |
+| `DATABASE_NAME`                    | Schema the application reads and writes                               | `points_of_interest_adm`                                                                                                              |
+| `DATABASE_USER`                    | Database user the application connects as                             | `root`                                                                                                                                |
+| `DATABASE_PASSWORD`                | Password of the application user                                      | `root`                                                                                                                                |
+| `FLYWAY_URL`                       | JDBC URL the migration run connects to                                | `jdbc:mysql://points-of-interest-adm:3306/points_of_interest_adm?allowPublicKeyRetrieval=true&useUnicode=yes&characterEncoding=UTF-8` |
+| `FLYWAY_USER`                      | Database user the migration run connects as                           | `root`                                                                                                                                |
+| `FLYWAY_TABLE`                     | Table Flyway keeps its schema history in                              | `schema_history`                                                                                                                      |
+| `FLYWAY_SCHEMAS`                   | Schema the migrations are applied to                                  | `points_of_interest_adm`                                                                                                              |
+| `FLYWAY_PASSWORD`                  | Password of the migration user                                        | `root`                                                                                                                                |
+| `FLYWAY_LOCATIONS`                 | Directory the migration files are read from                           | `filesystem:/flyway/sql`                                                                                                              |
+| `FLYWAY_CLEAN_DISABLED`            | Blocks `flyway clean` from dropping the schema                        | `false`                                                                                                                               |
+| `FLYWAY_VALIDATE_MIGRATION_NAMING` | Fails the migration run when a file name breaks the Flyway convention | `true`                                                                                                                                |
+
+### Logs
+
+```bash
+docker logs -f points-of-interest
+```

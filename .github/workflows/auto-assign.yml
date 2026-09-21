@@ -1,5 +1,4 @@
-name: Auto assign issues and pull requests
-
+name: CI (Auto assign)
 on:
   issues:
     types:
@@ -8,15 +7,24 @@ on:
     types:
       - opened
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.event.issue.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
-  run:
+  assign:
+    name: Assign
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       issues: write
       pull-requests: write
     steps:
       - name: Assign issues and pull requests
-        uses: gustavofreze/auto-assign@2.0.0
+        uses: gustavofreze/auto-assign@f4af3753657f61d54cf16600e99f863972eea5e2 # 2.1.0
         with:
           assignees: '${{ vars.ASSIGNEES }}'
           github_token: '${{ secrets.GITHUB_TOKEN }}'

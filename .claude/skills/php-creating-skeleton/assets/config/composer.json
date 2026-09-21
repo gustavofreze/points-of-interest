@@ -1,0 +1,83 @@
+{
+    "name": "<vendor>/<service-name>",
+    "description": "<one short sentence describing what the service does>",
+    "license": "proprietary",
+    "type": "project",
+    "keywords": [
+        "<vendor>",
+        "<service-name>"
+    ],
+    "require": {
+        "php": "^<runtime-minor>",
+        "php-di/slim-bridge": "*",
+        "respect/validation": "*",
+        "<auth-package>": "*",
+        "slim/psr7": "*",
+        "tiny-blocks/building-blocks": "*",
+        "tiny-blocks/environment-variable": "*",
+        "tiny-blocks/http": "*",
+        "tiny-blocks/http-error-handler": "*",
+        "tiny-blocks/http-health-check": "*",
+        "tiny-blocks/http-logging": "*",
+        "tiny-blocks/logger": "*"
+    },
+    "require-dev": {
+        "dg/bypass-finals": "*",
+        "ergebnis/composer-normalize": "*",
+        "infection/infection": "*",
+        "phpstan/phpstan": "*",
+        "phpunit/phpunit": "*",
+        "slevomat/coding-standard": "*",
+        "squizlabs/php_codesniffer": "*",
+        "tiny-blocks/docker-container": "*"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/<auth-package>"
+        }
+    ],
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "<RootNamespace>\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Test\\": "tests/",
+            "Test\\Integration\\": "tests/Integration/",
+            "Test\\<RootNamespace>\\": "tests/Unit/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "ergebnis/composer-normalize": true,
+            "infection/extension-installer": true
+        },
+        "process-timeout": 0,
+        "sort-packages": true
+    },
+    "scripts": {
+        "configure": [
+            "@composer install --optimize-autoloader",
+            "@composer normalize"
+        ],
+        "configure-and-update": [
+            "@composer update --optimize-autoloader",
+            "@composer normalize"
+        ],
+        "fix-review": "php ./vendor/bin/phpcbf --standard=phpcs.xml ./src ./tests",
+        "review": [
+            "php ./vendor/bin/phpcs --standard=phpcs.xml --extensions=php --ignore=src/<bootstrap-file>.php ./src ./tests",
+            "php ./vendor/bin/phpstan analyse --no-progress"
+        ],
+        "test-file": "php ./vendor/bin/phpunit --configuration phpunit.xml --no-coverage --filter",
+        "tests": [
+            "RUN_MIGRATIONS=1 php -d memory_limit=2G ./vendor/bin/phpunit --configuration phpunit.xml --no-progress tests",
+            "php ./vendor/bin/infection --threads=1 --no-progress --show-mutations=0 --logger-html=reports/coverage/mutation-report.html"
+        ]
+    }
+}

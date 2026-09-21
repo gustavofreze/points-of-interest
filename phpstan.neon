@@ -1,0 +1,27 @@
+# Level 5 adds argument-type checks on top of level 4's dead-code checks. Level 6 is the ceiling
+# that would demand iterable value-type docblocks (array<K, V>) on concrete classes, which the
+# php-code-style PHPDoc rule prohibits (PHPDoc lives on interfaces only), so raising past 5
+# requires revisiting that rule first.
+parameters:
+    level: 5
+    paths:
+        - src
+        - tests
+    tmpDir: reports/phpstan
+    ignoreErrors:
+        # The ExceptionMapping table invokes each resolver only for the exception matched by the
+        # preceding when(exceptionClass:), so a resolver narrowing its parameter to that concrete
+        # exception is safe by construction. The tiny-blocks stub types the callback as
+        # Closure(Throwable), which cannot express that per-arm narrowing.
+        -
+            identifier: argument.type
+            path: src/Driver/Http/DriverExceptionMapping.php
+        -
+            identifier: argument.type
+            path: src/Query/Shared/Http/QueryExceptionMapping.php
+        # MySQLDockerContainer::runWhen invokes the callback with a MySQLContainerStarted, so the
+        # closure narrowing its parameter to that subtype is safe. The tiny-blocks stub types the
+        # callback with the ContainerStarted base type.
+        -
+            identifier: argument.type
+            path: tests/bootstrap.php

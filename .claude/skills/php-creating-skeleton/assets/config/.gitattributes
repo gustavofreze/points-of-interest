@@ -1,0 +1,22 @@
+# Auto detect text files and perform LF normalization
+* text=auto eol=lf
+
+# ─── Diff drivers ────────────────────────────────────────────
+*.php           diff=php
+*.md            diff=markdown
+
+# ─── Force LF (break inside Docker/Linux if CRLF) ───────────
+*.sh            text eol=lf
+Makefile        text eol=lf
+Dockerfile.*    text eol=lf
+docker-compose* text eol=lf
+
+# ─── Binary (never merge/diff) ──────────────────────────────
+*.pem           binary
+*.key           binary
+*.crt           binary
+
+# ─── Generated (skip diff and GitHub stats) ──────────────────
+composer.lock   -diff linguist-generated
+*.sql           linguist-detectable=false
+openapi.yaml    linguist-documentation

@@ -1,11 +1,8 @@
 {
     "name": "gustavofreze/points-of-interest",
-    "type": "project",
+    "description": "Service responsible for registering points of interest and finding those near a reference coordinate.",
     "license": "MIT",
-    "homepage": "https://github.com/gustavofreze/points-of-interest",
-    "description": "Implementação do desafio 'Pontos de Interesse por GPS', do repositório backend-br.",
-    "prefer-stable": true,
-    "minimum-stability": "stable",
+    "type": "project",
     "keywords": [
         "backend-br",
         "points-of-interest"
@@ -16,12 +13,40 @@
             "homepage": "https://github.com/gustavofreze"
         }
     ],
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "infection/extension-installer": true
-        }
+    "homepage": "https://github.com/gustavofreze/points-of-interest",
+    "require": {
+        "php": "^8.5",
+        "ext-pdo": "*",
+        "doctrine/dbal": "^4.4",
+        "php-di/slim-bridge": "^3.4",
+        "ramsey/uuid": "^4.9",
+        "respect/validation": "^3.1",
+        "slim/psr7": "^1.8",
+        "slim/slim": "^4.15",
+        "tiny-blocks/building-blocks": "^5.3",
+        "tiny-blocks/environment-variable": "^2.0",
+        "tiny-blocks/http": "^7.2",
+        "tiny-blocks/http-error-handler": "^2.0",
+        "tiny-blocks/http-health-check": "^1.1",
+        "tiny-blocks/http-logging": "^1.2",
+        "tiny-blocks/http-query": "^2.4",
+        "tiny-blocks/logger": "^4.0",
+        "tiny-blocks/mapper": "^3.2",
+        "tiny-blocks/outbox": "^5.1",
+        "tiny-blocks/value-object": "^5.0"
     },
+    "require-dev": {
+        "dg/bypass-finals": "^1.11",
+        "ergebnis/composer-normalize": "^2.53",
+        "infection/infection": "^0.35",
+        "phpstan/phpstan": "^2.2",
+        "phpunit/phpunit": "^13.3",
+        "slevomat/coding-standard": "^8.31",
+        "squizlabs/php_codesniffer": "^4.0",
+        "tiny-blocks/docker-container": "^3.1"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "PointsOfInterest\\": "src/"
@@ -29,41 +54,36 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "PointsOfInterest\\": "tests/"
+            "Test\\": "tests/"
         }
     },
-    "require": {
-        "php": "^8.5",
-        "ext-pdo": "*",
-        "slim/psr7": "^1.8",
-        "slim/slim": "^4.15",
-        "doctrine/dbal": "^3.9",
-        "respect/validation": "^2.4",
-        "php-di/slim-bridge": "^3.4",
-        "tiny-blocks/http": "^4.2",
-        "tiny-blocks/mapper": "^1.4",
-        "tiny-blocks/collection": "^1.14",
-        "tiny-blocks/value-object": "^3.2",
-        "tiny-blocks/environment-variable": "^1.2"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^11.5",
-        "phpstan/phpstan": "^2.1",
-        "infection/infection": "^0.32",
-        "squizlabs/php_codesniffer": "^4.0"
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "ergebnis/composer-normalize": true,
+            "infection/extension-installer": true
+        },
+        "process-timeout": 0,
+        "sort-packages": true
     },
     "scripts": {
-        "test": "php -d memory_limit=2G ./vendor/bin/phpunit --configuration phpunit.xml tests",
-        "phpcs": "php ./vendor/bin/phpcs --standard=PSR12 --extensions=php ./src",
-        "phpstan": "php ./vendor/bin/phpstan analyse -c phpstan.neon.dist --quiet --no-progress",
-        "mutation-test": "php ./vendor/bin/infection --threads=max --logger-html=report/coverage/mutation-report.html --coverage=report/coverage",
-        "review": [
-            "@phpcs",
-            "@phpstan"
+        "configure": [
+            "@composer install --optimize-autoloader",
+            "@composer normalize"
         ],
+        "configure-and-update": [
+            "@composer update --optimize-autoloader",
+            "@composer normalize"
+        ],
+        "fix-review": "php ./vendor/bin/phpcbf --standard=phpcs.xml --extensions=php ./src ./tests",
+        "review": [
+            "php ./vendor/bin/phpcs --standard=phpcs.xml --extensions=php --ignore=src/Dependencies.php ./src ./tests",
+            "php ./vendor/bin/phpstan analyse --quiet --no-progress"
+        ],
+        "test-file": "RUN_MIGRATIONS=1 php ./vendor/bin/phpunit --configuration phpunit.xml --no-coverage --filter",
         "tests": [
-            "@test",
-            "@mutation-test"
+            "RUN_MIGRATIONS=1 php -d memory_limit=2G ./vendor/bin/phpunit --configuration phpunit.xml tests",
+            "php ./vendor/bin/infection --threads=max --logger-html=reports/coverage/mutation-report.html --coverage=reports/coverage"
         ]
     }
 }

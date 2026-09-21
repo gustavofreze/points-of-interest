@@ -1,6 +1,18 @@
 .idea
-*.lock
 .phpunit.*
 
 vendor
-report
+reports
+
+.env
+.env.*
+
+# Proof of concept. The local environment file is committed, so a clone runs with no setup step.
+# It carries local-only defaults and never a real credential.
+!.env.local
+
+# Claude Code local settings. Gitignored. Never commit.
+.claude/settings.local.json
+
+# Python bytecode cache. Each .pyc embeds the absolute path of this checkout.
+__pycache__
