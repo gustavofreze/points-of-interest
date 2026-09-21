@@ -8,7 +8,8 @@
 
 ## Overview
 
-Implementation of the [Pontos de Interesse por GPS](https://github.com/backend-br/desafios/blob/master/points-of-interest/PROBLEM.md)
+Implementation of
+the [Pontos de Interesse por GPS](https://github.com/backend-br/desafios/blob/master/points-of-interest/PROBLEM.md)
 challenge from the backend-br repository. Company XY Inc. builds GPS receivers and needs a platform that guides people
 to points of interest. This service registers a point of interest at the coordinates a receiver reported for it,
 publishes the registration through a transactional outbox, and lists the points back, either in full or narrowed to
@@ -124,8 +125,8 @@ make clean
 
 ### Access URLs
 
-| Environment | DNS                                     |
-|:------------|:----------------------------------------|
+| Environment | DNS                                      |
+|:------------|:-----------------------------------------|
 | `Local`     | http://points-of-interest.localhost:8290 |
 
 ### Database
@@ -143,23 +144,23 @@ environment instead. The `Makefile` hands the file to Docker Compose with `--env
 `points-of-interest` and the `points-of-interest-migrate` services load it through `env_file`.
 
 | Variable                           | Description                                                           | Development value                                                                                                                     |
-|:-----------------------------------|:----------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------|
-| `DEBUG`                            | Whether error responses carry the exception details                   | `false`                                                                                                                                   |
-| `SOURCE`                           | Address the root path redirects to                                    | `https://github.com/gustavofreze/points-of-interest`                                                                                      |
-| `APP_NAME`                         | Component name every log entry carries                                | `points-of-interest`                                                                                                                      |
-| `DATABASE_HOST`                    | Database host (docker service name)                                   | `points-of-interest-adm`                                                                                                                  |
-| `DATABASE_PORT`                    | Database port inside the docker network                               | `3306`                                                                                                                                    |
-| `DATABASE_NAME`                    | Schema the application reads and writes                               | `points_of_interest_adm`                                                                                                                  |
-| `DATABASE_USER`                    | Database user the application connects as                             | `root`                                                                                                                                    |
-| `DATABASE_PASSWORD`                | Password of the application user                                      | `root`                                                                                                                                    |
-| `FLYWAY_URL`                       | JDBC URL the migration run connects to                                | `jdbc:mysql://points-of-interest-adm:3306/points_of_interest_adm?allowPublicKeyRetrieval=true&useUnicode=yes&characterEncoding=UTF-8`   |
-| `FLYWAY_USER`                      | Database user the migration run connects as                           | `root`                                                                                                                                    |
-| `FLYWAY_TABLE`                     | Table Flyway keeps its schema history in                              | `schema_history`                                                                                                                          |
-| `FLYWAY_SCHEMAS`                   | Schema the migrations are applied to                                  | `points_of_interest_adm`                                                                                                                  |
-| `FLYWAY_PASSWORD`                  | Password of the migration user                                        | `root`                                                                                                                                    |
-| `FLYWAY_LOCATIONS`                 | Directory the migration files are read from                           | `filesystem:/flyway/sql`                                                                                                                  |
-| `FLYWAY_CLEAN_DISABLED`            | Blocks `flyway clean` from dropping the schema                        | `false`                                                                                                                                   |
-| `FLYWAY_VALIDATE_MIGRATION_NAMING` | Fails the migration run when a file name breaks the Flyway convention | `true`                                                                                                                                    |
+|:-----------------------------------|:----------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------------|
+| `DEBUG`                            | Whether error responses carry the exception details                   | `false`                                                                                                                               |
+| `SOURCE`                           | Address the root path redirects to                                    | `https://github.com/gustavofreze/points-of-interest`                                                                                  |
+| `APP_NAME`                         | Component name every log entry carries                                | `points-of-interest`                                                                                                                  |
+| `DATABASE_HOST`                    | Database host (docker service name)                                   | `points-of-interest-adm`                                                                                                              |
+| `DATABASE_PORT`                    | Database port inside the docker network                               | `3306`                                                                                                                                |
+| `DATABASE_NAME`                    | Schema the application reads and writes                               | `points_of_interest_adm`                                                                                                              |
+| `DATABASE_USER`                    | Database user the application connects as                             | `root`                                                                                                                                |
+| `DATABASE_PASSWORD`                | Password of the application user                                      | `root`                                                                                                                                |
+| `FLYWAY_URL`                       | JDBC URL the migration run connects to                                | `jdbc:mysql://points-of-interest-adm:3306/points_of_interest_adm?allowPublicKeyRetrieval=true&useUnicode=yes&characterEncoding=UTF-8` |
+| `FLYWAY_USER`                      | Database user the migration run connects as                           | `root`                                                                                                                                |
+| `FLYWAY_TABLE`                     | Table Flyway keeps its schema history in                              | `schema_history`                                                                                                                      |
+| `FLYWAY_SCHEMAS`                   | Schema the migrations are applied to                                  | `points_of_interest_adm`                                                                                                              |
+| `FLYWAY_PASSWORD`                  | Password of the migration user                                        | `root`                                                                                                                                |
+| `FLYWAY_LOCATIONS`                 | Directory the migration files are read from                           | `filesystem:/flyway/sql`                                                                                                              |
+| `FLYWAY_CLEAN_DISABLED`            | Blocks `flyway clean` from dropping the schema                        | `false`                                                                                                                               |
+| `FLYWAY_VALIDATE_MIGRATION_NAMING` | Fails the migration run when a file name breaks the Flyway convention | `true`                                                                                                                                |
 
 ### Logs
 
