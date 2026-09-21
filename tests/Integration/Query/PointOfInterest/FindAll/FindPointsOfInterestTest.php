@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Test\Integration\Query\PointOfInterest\FindAll;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PointsOfInterest\Query\PointOfInterest\FindAll\Http\FindPointsOfInterest;
 use PointsOfInterest\Query\Shared\Http\InvalidRequest;
 use Test\Integration\IntegrationTestCase;
 use Test\Integration\PointOfInterestRequests;
 use TinyBlocks\Http\Code;
+use TinyBlocks\HttpQuery\Exceptions\FilterOperatorNotAllowed;
 
 final class FindPointsOfInterestTest extends IntegrationTestCase
 {
@@ -35,6 +37,52 @@ final class FindPointsOfInterestTest extends IntegrationTestCase
                 yCoordinate: $point['yCoordinate']
             );
         }
+    }
+
+    public static function filterProvider(): array
+    {
+        return [
+            'Name equal'                  => [
+                'filter'   => 'name==Pub',
+                'expected' => ['Pub']
+            ],
+            'Name in'                     => [
+                'filter'   => 'name=in=(Pub,Posto)',
+                'expected' => ['Posto', 'Pub']
+            ],
+            'Name starts with'            => [
+                'filter'   => 'name=sw=P',
+                'expected' => ['Posto', 'Pub']
+            ],
+            'X coordinate equal'          => [
+                'filter'   => 'x_coordinate==27',
+                'expected' => ['Lanchonete']
+            ],
+            'X coordinate at least'       => [
+                'filter'   => 'x_coordinate=ge=27',
+                'expected' => ['Churrascaria', 'Lanchonete', 'Posto']
+            ],
+            'X coordinate at most'        => [
+                'filter'   => 'x_coordinate=le=15',
+                'expected' => ['Joalheria', 'Pub']
+            ],
+            'Y coordinate equal'          => [
+                'filter'   => 'y_coordinate==12',
+                'expected' => ['Joalheria', 'Lanchonete']
+            ],
+            'Y coordinate at least'       => [
+                'filter'   => 'y_coordinate=ge=18',
+                'expected' => ['Floricultura', 'Posto']
+            ],
+            'Y coordinate at most'        => [
+                'filter'   => 'y_coordinate=le=6',
+                'expected' => ['Churrascaria', 'Supermercado']
+            ],
+            'Both coordinates together'   => [
+                'filter'   => 'x_coordinate=ge=23;y_coordinate=le=6',
+                'expected' => ['Churrascaria', 'Supermercado']
+            ]
+        ];
     }
 
     public function testListsEveryPointMostRecentFirst(): void
@@ -140,21 +188,35 @@ final class FindPointsOfInterestTest extends IntegrationTestCase
         self::assertSame('2026-09-21T05:00:00.000000+00:00', $body['data'][0]['created_at']);
     }
 
-    public function testFiltersByCoordinate(): void
+    #[DataProvider('filterProvider')]
+    public function testFiltersByEveryOperatorTheSchemaDeclares(string $filter, array $expected): void
     {
-        /** @Given a request filtered by the x coordinate */
-        $path = sprintf('%s?filter=x_coordinate=ge=27', FindPointsOfInterestTest::BASE_URI);
+        /** @Given a request carrying a filter expression */
+        $path = sprintf('%s?filter=%s', FindPointsOfInterestTest::BASE_URI, urlencode($filter));
         $request = PointOfInterestRequests::get(path: $path);
 
         /** @When the listing is read */
         $actual = $this->get(FindPointsOfInterest::class)->handle($request);
         $body = (array)json_decode($actual->getBody()->__toString(), true);
 
-        /** @Then only the points beyond that coordinate are answered */
+        /** @Then only the points the expression selects are answered */
         $names = array_column($body['data'], 'name');
         sort($names);
 
-        self::assertSame(['Churrascaria', 'Lanchonete', 'Posto'], $names);
+        self::assertSame($expected, $names);
+    }
+
+    public function testRefusesAnOperatorTheSchemaDoesNotDeclare(): void
+    {
+        /** @Given a request filtering a coordinate under an operator the schema withholds */
+        $path = sprintf('%s?filter=%s', FindPointsOfInterestTest::BASE_URI, urlencode('x_coordinate=gt=27'));
+        $request = PointOfInterestRequests::get(path: $path);
+
+        /** @Then the request is refused */
+        $this->expectException(FilterOperatorNotAllowed::class);
+
+        /** @When the listing is read */
+        $this->get(FindPointsOfInterest::class)->handle($request);
     }
 
     public function testSortsByName(): void
