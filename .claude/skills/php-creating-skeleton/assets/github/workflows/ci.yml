@@ -1,0 +1,23 @@
+name: CI (<Service name>)
+on:
+  pull_request:
+    branches: [ "main" ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+# Fill <ci-workflows> with the repository that publishes the reusable workflow. The ref ships as
+# `@main` for development, pinned to a tag or a commit SHA for production.
+jobs:
+  pipeline:
+    uses: <ci-workflows>/.github/workflows/ci-php.yml@main
+    with:
+      service-name: <service-name>
+    secrets: inherit
+    permissions:
+      contents: read
+      id-token: write

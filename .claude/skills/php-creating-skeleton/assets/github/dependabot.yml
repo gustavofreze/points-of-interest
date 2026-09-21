@@ -1,0 +1,43 @@
+version: 2
+
+updates:
+  - package-ecosystem: "composer"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    # The dependency-policy cooldown in CLAUDE.md. Only a vendor the team maintains is exempt,
+    # never one the team merely consumes.
+    cooldown:
+      default-days: 7
+      exclude:
+        # One line per exempt vendor, never the joined row. Add the project's own Composer
+        # vendor as a second line beside this one.
+        - "tiny-blocks/*"
+    commit-message:
+      prefix: "build"
+    open-pull-requests-limit: 0
+    labels:
+      - "php"
+      - "security"
+      - "dependencies"
+    groups:
+      php-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "build"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    groups:
+      github-actions:
+        patterns:
+          - "*"

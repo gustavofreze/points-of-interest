@@ -1,0 +1,31 @@
+# Build-context filter for Dockerfile.prod. Same exclusions as .dockerignore plus
+# vendor/, the production builder stage installs dependencies from the lock file.
+.git
+.github
+.claude
+.idea
+.vscode
+.env
+.env.*
+Dockerfile*
+docker-compose*
+*.dockerignore
+node_modules/
+docker/
+database/
+docs/
+reports/
+tests/
+vendor/
+*.md
+openapi.yaml
+.phpunit.cache
+.editorconfig
+.gitattributes
+.gitignore
+LICENSE
+Makefile
+infection.json.dist
+phpcs.xml
+phpstan.neon
+phpunit.xml

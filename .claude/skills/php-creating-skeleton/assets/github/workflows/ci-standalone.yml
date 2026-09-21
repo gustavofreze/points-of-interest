@@ -1,0 +1,34 @@
+name: CI (<Service name>)
+on:
+  pull_request:
+    branches: [ "main" ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install dependencies
+        # Fill <ci-token-secret> with the name of the secret carrying the read-only registry token.
+        env:
+          COMPOSER_AUTH: '{"http-basic":{"github.com":{"username":"x-access-token","password":"${{ secrets.<ci-token-secret> }}"}}}'
+        run: make configure
+
+      - name: Run lint
+        run: make review
+
+      - name: Run tests
+        run: make tests

@@ -1,0 +1,18 @@
+.idea
+*.lock
+.phpunit.*
+!composer.lock
+
+__pycache__/
+*.pyc
+vendor
+reports/
+
+.env
+.env.*
+
+# Proof of concept. The local environment file is committed, so a clone runs with no setup step.
+# It carries local-only defaults and never a real credential.
+!.env.local
+
+docker/*/certificates/

@@ -1,0 +1,11 @@
+# Illustrative values only. The real terraform.tfvars is gitignored, and CI provides these
+# through TF_VAR_* environment variables.
+#
+# prefix and nginx_image_tag carry no default on purpose, so terraform refuses to plan until
+# both arrive. They are listed here so the operator sees what to supply.
+
+prefix          = "<vendor>"
+domain_name     = "example.com"
+ecr_registry    = "123456789012.dkr.ecr.<cloud-region>.amazonaws.com"
+state_bucket    = "<vendor>-terraform-state-00000000"
+nginx_image_tag = "1.29-runtime-1.0.0"

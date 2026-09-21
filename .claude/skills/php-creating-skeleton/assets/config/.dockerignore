@@ -1,0 +1,31 @@
+# Default build-context filter, used by Dockerfile.dev. Dockerfile.prod has its own
+# override (Dockerfile.prod.dockerignore) that additionally excludes vendor/, the
+# development image ships the host-installed vendor/ on purpose.
+.git
+.github
+.claude
+.idea
+.vscode
+.env
+.env.*
+Dockerfile*
+docker-compose*
+*.dockerignore
+node_modules/
+docker/
+database/
+docs/
+reports/
+tests/
+*.md
+openapi.yaml
+.phpunit.cache
+.editorconfig
+.gitattributes
+.gitignore
+LICENSE
+Makefile
+infection.json.dist
+phpcs.xml
+phpstan.neon
+phpunit.xml
