@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM gustavofreze/php:8.5-development-1.0.4
+FROM gustavofreze/php:8.5-development-1.0.8
 
 LABEL org.opencontainers.image.title="gustavofreze/points-of-interest" \
       org.opencontainers.image.authors="Gustavo Freze"
