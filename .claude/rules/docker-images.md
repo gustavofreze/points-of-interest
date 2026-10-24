@@ -27,9 +27,8 @@ scripts follows the project's Bash script conventions. The repository root layou
 
 Verify every item before producing any Dockerfile, dockerignore, or compose file.
 
-1. Every app Dockerfile inherits `FROM` a `<base-images>` image pinned to its full versioned tag, never a moving tag,
-   never `latest`. With `<base-images>` unset the base is the upstream official image, pinned the same way. See §
-   Consuming.
+1. Every app Dockerfile inherits `FROM` the floating `<upstream-minor>-<role>` alias of a `<base-images>` image, never
+   `latest`. With `<base-images>` unset the base is the upstream official image at an exact tag. See § Consuming.
 2. No app re-declares what its base already provides, and where no base provides it, the app declares it itself. See §
    What the base provides.
 3. A `.dockerignore` sits next to every Dockerfile and secrets never enter a build context copy. See § Build context.
@@ -108,9 +107,9 @@ calls for.
 
 Every published tag is `<upstream-minor>-<role>-<semver>`, where `role` is identical to the stage name. There is no bare
 tag: a role always sits between the upstream minor and the semantic version. Version tags are immutable, so any input
-change bumps the family `VERSION`. `latest` is forbidden. Each stage also carries one floating convenience alias
-`<upstream-minor>-<role>` that tracks its latest patch, for local use only, and an app always pins the full versioned
-tag.
+change bumps the family `VERSION`. `latest` is forbidden. Each stage also carries one floating alias
+`<upstream-minor>-<role>` that tracks its latest release, and an app consumes that alias, so a fix published in the
+base reaches every app on its next build with no change in the app.
 
 ## Version layer
 
@@ -140,9 +139,9 @@ subdirectory is born with its first Dockerfile.
 
 An app consumes the base in exactly two thin files:
 
-- `Dockerfile.dev`: `FROM <base-images>/php:<minor>-development-<V>` plus a `COPY` of the app.
-- `Dockerfile.prod`: a builder stage `FROM <base-images>/php:<minor>-builder-<V>` running `composer install`, then a
-  runtime stage `FROM <base-images>/php:<minor>-runtime-<V>` copying the built app with `--chown=www-data:www-data`.
+- `Dockerfile.dev`: `FROM <base-images>/php:<minor>-development` plus a `COPY` of the app.
+- `Dockerfile.prod`: a builder stage `FROM <base-images>/php:<minor>-builder` running `composer install`, then a
+  runtime stage `FROM <base-images>/php:<minor>-runtime` copying the built app with `--chown=www-data:www-data`.
 
 With `<base-images>` unset both files inherit the upstream official PHP image at an exact tag on `<runtime-minor>`, keep
 the same two-stage shape, and additionally carry the directives § What the base provides lists. They stop being thin,
@@ -171,13 +170,13 @@ the web sidecar at the same time, which is `CLAUDE.md` § Capability absence app
 whether the namespace exists gets the sidecar wrong.
 
 The web sidecar is consumed directly in the compose file. Where an nginx family exists it is
-`image: <base-images>/nginx:<minor>-development-<V>` with `PHP_UPSTREAM` pointing at the app service
+`image: <base-images>/nginx:<minor>-development` with `PHP_UPSTREAM` pointing at the app service
 (`<service-name>:9000`), and no nginx configuration file lives in the app unless it deliberately overrides the base.
 Where none exists the sidecar takes the upstream official image at its `<major>.<minor>` tag (§ Compose) and the app
 carries the site
 configuration under `docker/nginx/`. Either way the app mounts only its `public/` directory, and it keeps its Traefik
 labels while `<local-proxy>` is set, publishing its port directly otherwise. The migrate service splits the same way:
-`image: <base-images>/flyway:<minor>-runtime-<V>` with no entrypoint override where a Flyway family exists, and the
+`image: <base-images>/flyway:<minor>-runtime` with no entrypoint override where a Flyway family exists, and the
 upstream official image at its `<major>.<minor>` tag where none does, with a read-only mount of `database/migrations/`
 and the
 `DATABASE_*` variables in both cases.
@@ -262,8 +261,7 @@ runs it, and the deployed counterparts of these containers are provisioned elsew
 consumed here is therefore pinned to `<major>.<minor>`, which picks up a patch fix on the next `docker compose pull`
 rather than on the next pull request, and the upstream minor is a real compatibility boundary. The floor stays a floor:
 `latest` and a bare major are still forbidden, because neither states what the service runs on. A `<base-images>` image
-keeps its full `<upstream-minor>-<role>-<V>` tag even here, since that version is immutable, a bump is a deliberate
-release the CI version guard already gates, and nothing is gained by tracking an alias of it.
+is consumed through its `<upstream-minor>-<role>` alias here too, the same as in § Consuming.
 
 No `version:` key (deprecated). Every long-running service declares `cpus` and `mem_limit`. Health signals: services
 whose image ships a `HEALTHCHECK` (every `<base-images>` runtime and sidecar target does) inherit it, other long-running

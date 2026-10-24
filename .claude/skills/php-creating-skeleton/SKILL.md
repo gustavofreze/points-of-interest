@@ -97,9 +97,9 @@ runs. Each is the source of truth for the matching root file under `src/`:
 ## Completeness gate
 
 - [ ] Repository layout and docker substructure per the layout rule.
-- [ ] Both Dockerfiles inherit `FROM` a `<base-images>` image pinned to its full versioned tag, and both dockerignores
-      are in place (docker-images rule). With `<base-images>` unset the base is the upstream official image, pinned the
-      same way.
+- [ ] Both Dockerfiles inherit `FROM` the `<upstream-minor>-<role>` alias of a `<base-images>` image, and both
+      dockerignores are in place (docker-images rule). With `<base-images>` unset the base is the upstream official
+      image at an exact tag.
 - [ ] `docker-compose.yml` came from the template, `<database-host-port>` does not collide with another service on the
       local Docker host.
 - [ ] The `public/` entrypoint, the `.github/workflows/ci.yml` workflow, `.github/dependabot.yml`, and
@@ -151,9 +151,9 @@ runs. Each is the source of truth for the matching root file under `src/`:
 
 The config and tooling files ship as templates under `assets/config/` and are copied verbatim, then edited only at the
 placeholders. Both Dockerfiles, both dockerignores, and the `docker-compose.yml` (standard database, migrate, app, and
-web services) ship as templates too, so every new service is born inheriting `FROM` the `<base-images>` images at a full
-versioned tag (docker-images rule). With `<base-images>` unset the same templates inherit the upstream official images,
-pinned the same way. The standard `docker/<vendor>/` substructure, the `public/` entrypoint, the
+web services) ship as templates too, so every new service is born inheriting `FROM` the `<base-images>` images through
+their floating alias (docker-images rule). With `<base-images>` unset the same templates inherit the upstream official
+images at an exact tag. The standard `docker/<vendor>/` substructure, the `public/` entrypoint, the
 `.github/workflows/ci.yml` caller, and the `ecs/development/` and `ecs/production/` IaC stacks ship as templates as
 well, under the mirrored `assets/docker/`, `assets/public/`, `assets/github/`, and `assets/ecs/` subtrees. These infra
 bodies have no owning rule, so this skill is their canonical source (the layout, shell-scripts, github-workflows, and
@@ -266,10 +266,10 @@ are the coupling the template depends on.
   same token fills both so a package named differently from the origin's still resolves. The two entries move together
   and drop together. With `<auth-package>` unset the `require` key goes, the `repositories` block goes with it unless
   another private package remains, and `src/Routes.php` wires the route group without the authentication middleware.
-- `<base-images>` in the `Makefile`: `BASE_IMAGE_NS` takes the shared base image namespace and `BASE_IMAGE_VERSION` its
-  release. With `<base-images>` unset there is no shared namespace, so point `PHP_IMAGE` at the upstream official image
-  pinned to an exact tag (`php:$(PHP_VERSION)-cli`) and delete `BASE_IMAGE_NS` and `BASE_IMAGE_VERSION` rather than
-  leaving them orphaned, because the tooling rule removes an unreferenced variable instead of keeping it for symmetry.
+- `<base-images>` in the `Makefile`: `BASE_IMAGE_NS` takes the shared base image namespace. With `<base-images>` unset
+  there is no shared namespace, so point `PHP_IMAGE` at the upstream official image (`php:$(PHP_VERSION)-cli`) and
+  delete `BASE_IMAGE_NS` rather than leaving it orphaned, because the tooling rule removes an unreferenced variable
+  instead of keeping it for symmetry.
   The sidecar images are named as literals in `docker-compose.yml`, never through a `Makefile` variable.
 - `<local-proxy>` in the `Makefile`: `PROXY_DIR` takes the local proxy checkout. With `<local-proxy>` unset leave it
   empty and the `start` target skips the proxy step.

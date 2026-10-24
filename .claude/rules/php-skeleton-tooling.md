@@ -75,8 +75,8 @@ The canonical body of every file above is in the php-creating-skeleton skill.
 `Dockerfile.dev` and `Dockerfile.prod` still carry a literal `major.minor`, because a Dockerfile cannot read
 `composer.json` at parse time. A PHP bump therefore touches exactly two places, `composer.json` `require.php` and both
 `FROM` lines, and the two must agree. The `FROM` lines reference the shared base images published under `<base-images>`
-(`<base-images>/php:<minor>-development-<V>`, `<base-images>/php:<minor>-builder-<V>`,
-`<base-images>/php:<minor>-runtime-<V>`), whose tags encode the PHP `major.minor`, so a PHP bump also requires a base
+(`<base-images>/php:<minor>-development`, `<base-images>/php:<minor>-builder`,
+`<base-images>/php:<minor>-runtime`), whose tags encode the PHP `major.minor`, so a PHP bump also requires a base
 image release (docker-images rule). With `<base-images>` unset the `FROM` lines reference the upstream official image
 and the tag grammar becomes `php:<minor>-cli` and `php:<minor>-fpm`, which encodes the same `major.minor`. No base image
 release is involved then, and the invariant is untouched: `require.php`, both `FROM` lines, and the tag all carry one

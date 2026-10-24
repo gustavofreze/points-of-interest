@@ -8,7 +8,7 @@ SHELL := /bin/bash
 
 PROJECT_NAME := points-of-interest
 PHP_VERSION  := $(shell grep -m1 '"php"' composer.json | grep -oE '[0-9]+\.[0-9]+')
-PHP_IMAGE    := gustavofreze/php:$(PHP_VERSION)-cli-1.0.4
+PHP_IMAGE    := gustavofreze/php:$(PHP_VERSION)-cli
 
 TEST_NETWORK := $(PROJECT_NAME)-test_default
 
