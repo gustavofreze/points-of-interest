@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM gustavofreze/php:8.5-builder-1.0.4 AS builder
+FROM gustavofreze/php:8.5-builder AS builder
 
 COPY composer.json composer.lock ./
 
@@ -10,7 +10,7 @@ COPY ./ ./
 
 RUN composer dump-autoload --optimize --classmap-authoritative
 
-FROM gustavofreze/php:8.5-runtime-1.0.4
+FROM gustavofreze/php:8.5-runtime
 
 LABEL org.opencontainers.image.title="gustavofreze/points-of-interest" \
       org.opencontainers.image.authors="Gustavo Freze"

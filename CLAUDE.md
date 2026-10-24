@@ -81,9 +81,8 @@ not substitute a plausible one, and do not treat the dependent rule as unenforce
 
 Every rule that names a capability states inline what holds when it is absent, because **an invariant is stated about
 the artifact and never about who supplies it**. Read a rule sentence as two claims. In `inherits FROM a
-<base-images> image pinned to its full versioned tag, never a moving tag, never latest`, the pinning is the invariant
-and the namespace is the binding. With no `<base-images>` the pinning still holds and the namespace is the upstream
-official image.
+<base-images> image, never latest`, the floor against `latest` is the invariant and the namespace is the binding.
+With no `<base-images>` the floor still holds and the namespace is the upstream official image.
 
 The same split applies to a prohibition. A rule that forbids restating what a base image already provides is conditional
 on a base actually providing it. With no base, the app restates those directives itself and the prohibition does not

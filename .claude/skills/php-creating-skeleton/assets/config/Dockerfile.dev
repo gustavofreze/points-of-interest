@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM <base-images>/php:<runtime-minor>-development-1.0.0
+FROM <base-images>/php:<runtime-minor>-development
 
 LABEL org.opencontainers.image.title="<vendor>/<service-name>"
 LABEL org.opencontainers.image.environment="development"

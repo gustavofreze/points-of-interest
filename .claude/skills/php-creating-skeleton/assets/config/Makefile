@@ -33,9 +33,8 @@ PHP_VERSION    := $(shell grep -m1 '"php"' composer.json | sed -E 's/[^0-9]*([0-
 RUN_MIGRATIONS ?=
 
 BASE_IMAGE_NS      ?= <base-images>
-BASE_IMAGE_VERSION ?= 1.0.0
 
-PHP_IMAGE          ?= $(BASE_IMAGE_NS)/php:$(PHP_VERSION)-cli-$(BASE_IMAGE_VERSION)
+PHP_IMAGE          ?= $(BASE_IMAGE_NS)/php:$(PHP_VERSION)-cli
 
 PROXY_DIR          ?= <local-proxy>
 
