@@ -29,6 +29,8 @@ final readonly class FindPointsOfInterestRequest
 
         $schema = Schema::create()
             ->sortable(fields: ['id', 'name', 'created_at'])
+            ->cursorKey(field: 'created_at', valueKind: ValueKind::DATETIME)
+            ->cursorKey(field: 'id', valueKind: ValueKind::UUID)
             ->filterable(
                 field: 'name',
                 operators: [Operator::EQUAL, Operator::IN, Operator::STARTS_WITH],
