@@ -48,7 +48,6 @@
         <env name="APP_NAME" value="points-of-interest"/>
         <env name="SOURCE" value="https://points-of-interest.test"/>
 
-        <env name="DATABASE_HOST" value="points-of-interest-adm-test"/>
         <env name="DATABASE_PORT" value="3306"/>
         <env name="DATABASE_NAME" value="points_of_interest_adm_test"/>
         <env name="DATABASE_USER" value="root"/>
