@@ -16,7 +16,7 @@ $databaseHost = sprintf($template, gethostname());
 
 putenv(sprintf('DATABASE_HOST=%s', $databaseHost));
 
-FlywayDockerContainer::from(image: 'flyway/flyway:13.7')
+FlywayDockerContainer::from(image: 'flyway/flyway:13.12')
     ->withSource(
         container: MySQLDockerContainer::from(image: 'mysql:8.4')
             ->withName(name: $databaseHost)
