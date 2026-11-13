@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Points Of Interest service communication</title>
+  <!-- Drawn with the diagram-design skill, Skedli palette (white canvas variant). Export the README SVG from
+       skedli-context with python3 helpers/diagram_export.py <this file>, which runs the skill's export_svg.py
+       and outlines every text as a path, so the image depends on no font. -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --color-ink: #011f51; --color-muted: #3f4a66;
+      --font-sans: 'Nunito', 'Nunito Variable', system-ui, sans-serif;
+      --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    body { font-family: var(--font-sans); background: #ffffff; color: var(--color-ink); min-height: 100vh;
+      display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
+    .frame { max-width: 1200px; width: 100%; }
+    .diagram-container { width: 100%; overflow-x: auto; }
+    .eyebrow { font-size: 0.8rem; font-weight: 600; color: var(--color-muted); margin-bottom: 0.25rem; }
+    h1 { font-size: 1.6rem; font-weight: 700; color: var(--color-ink); margin-bottom: 1.5rem; }
+    svg { width: 100%; min-width: 1104px; display: block; }
+    @media print {
+      .diagram-container { overflow-x: visible; }
+      svg { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">points-of-interest · communication</p>
+    <h1>Points Of Interest service communication</h1>
+    <div class="diagram-container">
+      <svg viewBox="0 0 1104 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="points-of-interest-flow-title points-of-interest-flow-desc">
+        <title id="points-of-interest-flow-title">Points Of Interest service communication</title>
+        <desc id="points-of-interest-flow-desc">One write request through the points-of-interest service, step by step: the HTTP client's request and response, the MySQL write of the point and its outbox row in one transaction, and the commit. The service calls no peer, and no relay publishes the outbox rows yet.</desc>
+        <defs>
+          <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,1 L7,4 L1,7" fill="none" stroke="#2e58d6" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker>
+          <marker id="arrow-sync" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,1 L7,4 L1,7" fill="none" stroke="#2e58d6" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker>
+          <marker id="arrow-async" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,1 L7,4 L1,7" fill="none" stroke="#0b5573" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker>
+        </defs>
+
+        <rect width="100%" height="100%" rx="12" fill="#ffffff"/>
+
+        <!-- Captions -->
+        <text x="40" y="44" fill="#3f4a66" font-size="11" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" font-weight="700">Called by</text>
+        <text x="864" y="44" fill="#3f4a66" font-size="11" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" font-weight="700">Peers</text>
+
+        <!-- Caller: request (1) and response (4) -->
+        <line x1="224" y1="94" x2="400" y2="94" stroke="#2e58d6" stroke-width="1.2" marker-end="url(#arrow-sync)"/>
+        <line x1="400" y1="114" x2="224" y2="114" stroke="#2e58d6" stroke-width="0.9" marker-end="url(#arrow-sync)"/>
+
+        <!-- No peer -->
+        <rect x="864" y="64" width="200" height="80" rx="12" fill="none" stroke="#c4cbdc" stroke-width="1" stroke-dasharray="1.5,3.5"/>
+        <text x="964" y="100" fill="#3f4a66" font-size="12" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" font-weight="700" text-anchor="middle">No peer call</text>
+        <text x="964" y="118" fill="#3f4a66" font-size="11" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" text-anchor="middle">Standalone service</text>
+
+        <!-- MySQL transaction: write (2) and commit (3) -->
+        <line x1="536" y1="368" x2="536" y2="432" stroke="#2e58d6" stroke-width="1.2" marker-end="url(#arrow-sync)"/>
+        <line x1="568" y1="432" x2="568" y2="368" stroke="#2e58d6" stroke-width="0.9" marker-end="url(#arrow-sync)"/>
+
+        <!-- Outbox rows, no relay reads them (dotted, no arrow) -->
+        <line x1="648" y1="464" x2="864" y2="464" stroke="#c4cbdc" stroke-width="1.2" stroke-dasharray="1.5,3.5"/>
+        <rect x="864" y="424" width="200" height="80" rx="12" fill="none" stroke="#c4cbdc" stroke-width="1" stroke-dasharray="1.5,3.5"/>
+        <text x="964" y="460" fill="#3f4a66" font-size="12" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" font-weight="700" text-anchor="middle">No relay</text>
+        <text x="964" y="478" fill="#3f4a66" font-size="11" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" text-anchor="middle">Outbox rows stay stored</text>
+
+        <!-- Caller -->
+        <rect x="40" y="64" width="184" height="80" rx="12" fill="#e7ebf3"/>
+        <g transform="translate(54 94.0) scale(0.833333)" fill="none" stroke="#3f4a66" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" /> <path d="M10 4v4" /> <path d="M2 8h20" /> <path d="M6 4v4" /></g>
+        <text x="88" y="92.0" fill="#011f51" font-size="13" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" font-weight="700">API client</text>
+        <text x="88" y="110.0" fill="#3f4a66" font-size="11" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif">Postman collection,</text>
+        <text x="88" y="125.0" fill="#3f4a66" font-size="11" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif">any HTTP client</text>
+
+        <!-- points-of-interest (focal, dotted bounded-context boundary) -->
+        <rect x="400" y="64" width="304" height="304" rx="12" fill="#e4ecff" stroke="#2e58d6" stroke-width="1.2" stroke-dasharray="1.5,3.5"/>
+        <g transform="translate(424 84) scale(0.916667)" fill="none" stroke="#2e58d6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /> <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /> <path d="M2 12h20" /></g>
+        <text x="456" y="101" fill="#011f51" font-size="16" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" font-weight="700">points-of-interest</text>
+        <text x="424" y="124" fill="#3f4a66" font-size="11" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif">GPS points and proximity search</text>
+        <rect x="416" y="148" width="136" height="88" rx="10" fill="#ffffff"/>
+        <text x="484.0" y="188.0" fill="#011f51" font-size="12.5" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" font-weight="700" text-anchor="middle">Points</text>
+        <text x="484.0" y="205.0" fill="#3f4a66" font-size="10.5" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" text-anchor="middle">Register, list</text>
+        <rect x="560" y="148" width="136" height="88" rx="10" fill="#ffffff"/>
+        <text x="628.0" y="188.0" fill="#011f51" font-size="12.5" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" font-weight="700" text-anchor="middle">Proximity</text>
+        <text x="628.0" y="205.0" fill="#3f4a66" font-size="10.5" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" text-anchor="middle">Within a distance</text>
+        <rect x="416" y="252" width="136" height="88" rx="10" fill="#ffffff"/>
+        <text x="484.0" y="292.0" fill="#011f51" font-size="12.5" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" font-weight="700" text-anchor="middle">Seed</text>
+        <text x="484.0" y="309.0" fill="#3f4a66" font-size="10.5" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" text-anchor="middle">Seven points</text>
+        <rect x="560" y="252" width="136" height="88" rx="10" fill="#ffffff"/>
+        <text x="628.0" y="292.0" fill="#011f51" font-size="12.5" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" font-weight="700" text-anchor="middle">Outbox</text>
+        <text x="628.0" y="309.0" fill="#3f4a66" font-size="10.5" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" text-anchor="middle">Point events</text>
+
+        <!-- Store -->
+        <rect x="464" y="432" width="184" height="64" rx="12" fill="#ffffff" stroke="#c4cbdc" stroke-width="1"/>
+        <g transform="translate(478 454.0) scale(0.833333)" fill="none" stroke="#2e58d6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3" /> <path d="M3 5V19A9 3 0 0 0 21 19V5" /> <path d="M3 12A9 3 0 0 0 21 12" /></g>
+        <text x="512" y="461.0" fill="#011f51" font-size="13" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" font-weight="700">MySQL</text>
+        <text x="512" y="478.0" fill="#3f4a66" font-size="11" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif">State, outbox_events</text>
+
+        <!-- Step labels, next to their badges -->
+        <rect x="242" y="77" width="103" height="14" rx="3" fill="#ffffff"/>
+        <text x="246" y="88" fill="#3f4a66" font-size="10" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" font-weight="600">Points of interest</text>
+        <rect x="324" y="120" width="50" height="14" rx="3" fill="#ffffff"/>
+        <text x="370" y="131" fill="#3f4a66" font-size="10" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" font-weight="600" text-anchor="end">Response</text>
+        <rect x="407" y="393" width="119" height="14" rx="3" fill="#ffffff"/>
+        <text x="522" y="404" fill="#3f4a66" font-size="10" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" font-weight="600" text-anchor="end">Writes point + outbox</text>
+        <rect x="578" y="393" width="39" height="14" rx="3" fill="#ffffff"/>
+        <text x="582" y="404" fill="#3f4a66" font-size="10" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" font-weight="600">Commit</text>
+        <rect x="660" y="445" width="76" height="14" rx="3" fill="#ffffff"/>
+        <text x="664" y="456" fill="#3f4a66" font-size="10" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" font-weight="600">outbox_events</text>
+
+        <!-- Step badges -->
+        <circle cx="232" cy="94" r="9" fill="#2e58d6"/>
+        <text x="232" y="97.8" fill="#ffffff" font-size="10.5" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" font-weight="700" text-anchor="middle">1</text>
+        <circle cx="392" cy="114" r="9" fill="#2e58d6"/>
+        <text x="392" y="117.8" fill="#ffffff" font-size="10.5" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" font-weight="700" text-anchor="middle">4</text>
+        <circle cx="536" cy="400" r="9" fill="#2e58d6"/>
+        <text x="536" y="403.8" fill="#ffffff" font-size="10.5" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" font-weight="700" text-anchor="middle">2</text>
+        <circle cx="568" cy="400" r="9" fill="#2e58d6"/>
+        <text x="568" y="403.8" fill="#ffffff" font-size="10.5" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif" font-weight="700" text-anchor="middle">3</text>
+
+        <!-- Legend, one row -->
+        <line x1="40" y1="568" x2="1064" y2="568" stroke="#dbe0ec" stroke-width="1"/>
+        <rect x="40" y="583" width="18" height="12" rx="4" fill="#e4ecff" stroke="#2e58d6" stroke-width="1" stroke-dasharray="1.5,2.5"/>
+        <text x="66" y="592" fill="#3f4a66" font-size="10.5" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif">Bounded context</text>
+        <rect x="175" y="583" width="18" height="12" rx="4" fill="#e7ebf3"/>
+        <text x="201" y="592" fill="#3f4a66" font-size="10.5" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif">Caller</text>
+        <rect x="261" y="583" width="18" height="12" rx="4" fill="#ffffff" stroke="#c4cbdc" stroke-width="1"/>
+        <text x="287" y="592" fill="#3f4a66" font-size="10.5" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif">Data store</text>
+        <line x1="369" y1="589" x2="393" y2="589" stroke="#2e58d6" stroke-width="1.2" marker-end="url(#arrow-sync)"/>
+        <text x="401" y="592" fill="#3f4a66" font-size="10.5" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif">Synchronous request</text>
+        <line x1="531" y1="589" x2="555" y2="589" stroke="#2e58d6" stroke-width="0.9" marker-end="url(#arrow-sync)"/>
+        <text x="563" y="592" fill="#3f4a66" font-size="10.5" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif">Response (thinner)</text>
+        <circle cx="697" cy="588" r="8" fill="#2e58d6"/>
+        <text x="714" y="592" fill="#3f4a66" font-size="10.5" font-family="'Nunito', 'Nunito Variable', system-ui, sans-serif">Synchronous request step</text>
+      </svg>
+    </div>
+  </div>
+</body>
+</html>
