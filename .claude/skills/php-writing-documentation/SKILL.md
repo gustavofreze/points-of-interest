@@ -94,15 +94,25 @@ Target: the repository `README.md`.
 ### Assembly order
 
 1. Start from `references/readme.md` and follow the fixed section order.
-2. Fill the Overview, the use-case, query, health, and webhook link lists, each pointing to the matching docs page
-   anchor.
-3. Fill Installation and Environment setup from the service `make` targets and environment table.
+2. Fill the Overview and its `### Flow` (the communication diagram, plus the domain events diagram when the service
+   publishes or consumes events, and the sources line), then the use-case, query, health, and webhook link lists, each
+   pointing to the matching docs page anchor.
+3. Fill Installation from `make help`, every target of each group, and Environment setup from the infrastructure stack
+   hostnames and the environment table. With `<deploy-target>` unset Access URLs carries the `Local` row only.
+4. For a gateway only, add `## HTTP contract` with its `### Error codes` table.
 
 ### Completeness gate
 
+- [ ] The H1 is the service name in title case, with nothing between it and the table of contents.
 - [ ] The fixed section order is followed, with anchor links to every section.
+- [ ] `### Flow` embeds the SVG of each diagram and links its HTML source. The SVG is exported from the HTML, never
+      edited by hand, and there is no `### Events` subsection.
 - [ ] The README inlines no endpoint documentation, every endpoint link points to a docs page anchor.
 - [ ] The Webhooks subsection is present only when the service consumes webhooks.
+- [ ] Every Installation subsection lists every target of its `make help` group.
+- [ ] Each cloud Access URLs row carries the stack hostname, with the note when the public hostname answers only
+      `/health/*`.
+- [ ] `## HTTP contract` is present only on a gateway, and its error table lists every code the gateway produces.
 - [ ] The prose hook is clean.
 
 ## Shapes and how-to (read when scaffolding)
