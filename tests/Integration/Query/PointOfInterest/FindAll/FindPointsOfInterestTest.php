@@ -275,9 +275,9 @@ final class FindPointsOfInterestTest extends IntegrationTestCase
 
     public function testKeepsTheProximitySearchWhileWalkingTheCursor(): void
     {
-        /** @Given the first page of one point inside the maximum distance */
+        /** @Given the first page of two points inside the maximum distance */
         $path = sprintf(
-            '%s?distance=10&x_coordinate=20&y_coordinate=10&page%%5Bsize%%5D=1',
+            '%s?distance=10&x_coordinate=20&y_coordinate=10&page%%5Bsize%%5D=2',
             FindPointsOfInterestTest::BASE_URI
         );
         $first = $this->get(FindPointsOfInterest::class)->handle(PointOfInterestRequests::get(path: $path));
@@ -290,8 +290,8 @@ final class FindPointsOfInterestTest extends IntegrationTestCase
         $secondBody = (array)json_decode($second->getBody()->__toString(), true);
 
         /** @Then the following page stays inside the same circle */
-        self::assertSame('Supermercado', $firstBody['data'][0]['name']);
-        self::assertSame('Pub', $secondBody['data'][0]['name']);
+        self::assertSame(['Supermercado', 'Pub'], array_column($firstBody['data'], 'name'));
+        self::assertSame(['Joalheria', 'Lanchonete'], array_column($secondBody['data'], 'name'));
     }
 
     public function testRefusesACursorForgingTheIdentifier(): void

@@ -38,6 +38,7 @@ final readonly class FindPointsOfInterestRequest
             )
             ->filterable(field: 'x_coordinate', operators: $coordinate, valueKind: ValueKind::INTEGER)
             ->filterable(field: 'y_coordinate', operators: $coordinate, valueKind: ValueKind::INTEGER)
+            ->preserving(parameters: ['distance', 'x_coordinate', 'y_coordinate'])
             ->defaultSort(sort: Sort::fromExpression(expression: '-created_at,-id'));
 
         $criteria = Criteria::fromQuery(schema: $schema, request: $request);
