@@ -10,10 +10,13 @@ use PointsOfInterest\Query\Shared\Http\InvalidRequest;
 use Test\Integration\IntegrationTestCase;
 use Test\Integration\PointOfInterestRequests;
 use TinyBlocks\Http\Code;
+use TinyBlocks\HttpQuery\Exceptions\CursorIsInvalid;
 use TinyBlocks\HttpQuery\Exceptions\FilterOperatorNotAllowed;
 
 final class FindPointsOfInterestTest extends IntegrationTestCase
 {
+    private const string FORGED_ID_CURSOR = 'WyIyMDI2LTA4LTExVDEwOjAwOjAwLjAwMDAwMCswMDowMCIsIm5vdC1hLXV1aWQiXQ';
+    private const string FORGED_INSTANT_CURSOR = 'WyJub3ciLCIwMTk4YmZjMC0yMjIyLTcwMDAtODAwMC0wMDAwMDAwMDAwMDEiXQ';
     private const string BASE_URI = '/points-of-interest';
 
     private const array SEED = [
@@ -272,9 +275,9 @@ final class FindPointsOfInterestTest extends IntegrationTestCase
 
     public function testKeepsTheProximitySearchWhileWalkingTheCursor(): void
     {
-        /** @Given the first page of one point inside the maximum distance */
+        /** @Given the first page of two points inside the maximum distance */
         $path = sprintf(
-            '%s?distance=10&x_coordinate=20&y_coordinate=10&page%%5Bsize%%5D=1',
+            '%s?distance=10&x_coordinate=20&y_coordinate=10&page%%5Bsize%%5D=2',
             FindPointsOfInterestTest::BASE_URI
         );
         $first = $this->get(FindPointsOfInterest::class)->handle(PointOfInterestRequests::get(path: $path));
@@ -287,7 +290,41 @@ final class FindPointsOfInterestTest extends IntegrationTestCase
         $secondBody = (array)json_decode($second->getBody()->__toString(), true);
 
         /** @Then the following page stays inside the same circle */
-        self::assertSame('Supermercado', $firstBody['data'][0]['name']);
-        self::assertSame('Pub', $secondBody['data'][0]['name']);
+        self::assertSame(['Supermercado', 'Pub'], array_column($firstBody['data'], 'name'));
+        self::assertSame(['Joalheria', 'Lanchonete'], array_column($secondBody['data'], 'name'));
+    }
+
+    public function testRefusesACursorForgingTheIdentifier(): void
+    {
+        /** @Given a request carrying a cursor whose identifier is not a UUID */
+        $path = sprintf(
+            '%s?page%%5Bcursor%%5D=%s',
+            FindPointsOfInterestTest::BASE_URI,
+            FindPointsOfInterestTest::FORGED_ID_CURSOR
+        );
+        $request = PointOfInterestRequests::get(path: $path);
+
+        /** @Then the cursor is rejected before reaching the store */
+        $this->expectException(CursorIsInvalid::class);
+
+        /** @When the listing is read */
+        $this->get(FindPointsOfInterest::class)->handle($request);
+    }
+
+    public function testRefusesACursorForgingTheCreationInstant(): void
+    {
+        /** @Given a request carrying a cursor whose creation instant is not an ISO 8601 date-time */
+        $path = sprintf(
+            '%s?page%%5Bcursor%%5D=%s',
+            FindPointsOfInterestTest::BASE_URI,
+            FindPointsOfInterestTest::FORGED_INSTANT_CURSOR
+        );
+        $request = PointOfInterestRequests::get(path: $path);
+
+        /** @Then the cursor is rejected before reaching the store */
+        $this->expectException(CursorIsInvalid::class);
+
+        /** @When the listing is read */
+        $this->get(FindPointsOfInterest::class)->handle($request);
     }
 }

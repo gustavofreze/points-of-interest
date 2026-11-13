@@ -19,9 +19,3 @@ parameters:
         -
             identifier: argument.type
             path: src/Query/Shared/Http/QueryExceptionMapping.php
-        # MySQLDockerContainer::runWhen invokes the callback with a MySQLContainerStarted, so the
-        # closure narrowing its parameter to that subtype is safe. The tiny-blocks stub types the
-        # callback with the ContainerStarted base type.
-        -
-            identifier: argument.type
-            path: tests/bootstrap.php

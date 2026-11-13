@@ -29,6 +29,8 @@ final readonly class FindPointsOfInterestRequest
 
         $schema = Schema::create()
             ->sortable(fields: ['id', 'name', 'created_at'])
+            ->cursorKey(field: 'created_at', valueKind: ValueKind::DATETIME)
+            ->cursorKey(field: 'id', valueKind: ValueKind::UUID)
             ->filterable(
                 field: 'name',
                 operators: [Operator::EQUAL, Operator::IN, Operator::STARTS_WITH],
@@ -36,6 +38,7 @@ final readonly class FindPointsOfInterestRequest
             )
             ->filterable(field: 'x_coordinate', operators: $coordinate, valueKind: ValueKind::INTEGER)
             ->filterable(field: 'y_coordinate', operators: $coordinate, valueKind: ValueKind::INTEGER)
+            ->preserving(parameters: ['distance', 'x_coordinate', 'y_coordinate'])
             ->defaultSort(sort: Sort::fromExpression(expression: '-created_at,-id'));
 
         $criteria = Criteria::fromQuery(schema: $schema, request: $request);

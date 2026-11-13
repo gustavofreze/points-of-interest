@@ -48,7 +48,7 @@ services:
       start_period: 30s
 
   points-of-interest-migrate:
-    image: flyway/flyway:13.7
+    image: flyway/flyway:13.12
     cpus: 0.5
     hostname: points-of-interest-migrate
     mem_limit: 256m

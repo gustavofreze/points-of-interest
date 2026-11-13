@@ -279,6 +279,11 @@ Comment-guided entries to fill in `phpunit.xml`, leaving the rest verbatim:
 - `<source><exclude>`: the provider-, gateway-, and webhook-specific Settings files.
 - `<php>`: the service-specific external endpoint URLs, mock secrets, and sandbox API keys.
 
+`phpunit.xml` carries no `DATABASE_HOST`. The test database host is set by `tests/bootstrap.php`, copied from
+`assets/config/tests/bootstrap.php`, which names the MySQL container after the test runner (`gethostname()`) so two runs
+in parallel never share one database. A value in `phpunit.xml` would win over it, because the environment reads
+`$_ENV` before the process environment.
+
 Capability holes. Each is a hole in a shipped template AND a value the reading table resolves, so filling it is what
 makes the reading table answer later. A capability the service does not have leaves no literal behind: delete the block,
 the label, or the whole subtree the hole sits in, rather than filling it with a placeholder value.

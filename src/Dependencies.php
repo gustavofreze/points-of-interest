@@ -110,6 +110,7 @@ final readonly class Dependencies
             LogMiddleware::class    => static function (ContainerInterface $container): LogMiddleware {
                 return LogMiddleware::create()
                     ->withLogger(logger: $container->get(Logger::class))
+                    ->withFailureOnlyPaths('/health/liveness', '/health/readiness')
                     ->build();
             },
             ErrorMiddleware::class  => static function (ContainerInterface $container): ErrorMiddleware {

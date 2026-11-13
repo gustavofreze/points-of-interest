@@ -47,7 +47,6 @@
     <php>
         <env name="APP_NAME" value="<service-name>"/>
 
-        <env name="DATABASE_HOST" value="<service-name>-adm-test"/>
         <env name="DATABASE_PORT" value="3306"/>
         <env name="DATABASE_NAME" value="<service_name>_adm_test"/>
         <env name="DATABASE_USER" value="root"/>
