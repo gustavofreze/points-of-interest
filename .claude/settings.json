@@ -28,6 +28,12 @@
                         "args": ["-B", "${CLAUDE_PROJECT_DIR}/.claude/hooks/check-prose-punctuation.py"],
                         "command": "python3",
                         "timeout": 30
+                    },
+                    {
+                        "type": "command",
+                        "args": ["-B", "${CLAUDE_PROJECT_DIR}/.claude/hooks/check-markdown-layout.py"],
+                        "command": "python3",
+                        "timeout": 30
                     }
                 ]
             },
