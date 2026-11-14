@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a585636583e045929cc5710b2eafed4a",
+    "content-hash": "a0ad440a350eaab4f60ba4eb0dcacd8a",
     "packages": [
         {
             "name": "brick/math",
@@ -7771,16 +7771,16 @@
         },
         {
             "name": "tiny-blocks/docker-container",
-            "version": "5.0.4",
+            "version": "6.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tiny-blocks/docker-container.git",
-                "reference": "878beef81859db953416b6f906ed38e2671b6d8e"
+                "reference": "d29b099bdd86e34f339f1d2768730bd4bbf179a8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tiny-blocks/docker-container/zipball/878beef81859db953416b6f906ed38e2671b6d8e",
-                "reference": "878beef81859db953416b6f906ed38e2671b6d8e",
+                "url": "https://api.github.com/repos/tiny-blocks/docker-container/zipball/d29b099bdd86e34f339f1d2768730bd4bbf179a8",
+                "reference": "d29b099bdd86e34f339f1d2768730bd4bbf179a8",
                 "shasum": ""
             },
             "require": {
@@ -7827,7 +7827,7 @@
                 "issues": "https://github.com/tiny-blocks/docker-container/issues",
                 "source": "https://github.com/tiny-blocks/docker-container"
             },
-            "time": "2026-10-24T18:38:43+00:00"
+            "time": "2026-11-13T23:27:54+00:00"
         },
         {
             "name": "tiny-blocks/encoder",

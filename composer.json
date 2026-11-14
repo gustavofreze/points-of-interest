@@ -43,7 +43,7 @@
         "phpunit/phpunit": "^13.4",
         "slevomat/coding-standard": "^8.31",
         "squizlabs/php_codesniffer": "^4.0",
-        "tiny-blocks/docker-container": "^5.0"
+        "tiny-blocks/docker-container": "^6.0"
     },
     "minimum-stability": "stable",
     "prefer-stable": true,
